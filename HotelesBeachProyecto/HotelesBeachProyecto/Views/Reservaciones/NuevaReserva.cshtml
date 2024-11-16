@@ -1,0 +1,113 @@
+﻿@model HotelesBeachProyecto.Models.Reservacion
+
+@{
+    ViewData["Title"] = "NuevaReserva";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Nueva Reservación</h2>
+
+    <form asp-action="ProcesarReserva" method="post">
+        <!-- Información del cliente -->
+        <fieldset class="border p-4 mb-4">
+            <legend class="w-auto px-3">Información del cliente</legend>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="TipoIdentificacion" class="form-label">Tipo de identificación</label>
+                    <select asp-for="TipoIdentificacion" class="form-select">
+                        <option>Seleccione...</option>
+                        <option>Cédula</option>
+                        <option>Pasaporte</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="Identificacion" class="form-label">Identificación</label>
+                    <input asp-for="Identificacion" class="form-control" placeholder="Ingrese su identificación" />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="NombreCompleto" class="form-label">Nombre completo</label>
+                    <input asp-for="NombreCompleto" class="form-control" placeholder="Ingrese su nombre completo" />
+                </div>
+                <div class="col-md-6">
+                    <label for="Telefono" class="form-label">Teléfono</label>
+                    <input asp-for="Telefono" class="form-control" placeholder="Ingrese su teléfono" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="CorreoElectronico" class="form-label">Correo electrónico</label>
+                    <input asp-for="CorreoElectronico" class="form-control" type="email" placeholder="Ingrese su correo electrónico" />
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- Información de la reservación -->
+        <fieldset class="border p-4 mb-4">
+            <legend class="w-auto px-3">Información de la reservación</legend>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="PaqueteSeleccionado" class="form-label">Paquete</label>
+                    <select asp-for="PaqueteSeleccionado" class="form-select">
+                        <option>Seleccione...</option>
+                        <option>Paquete 1</option>
+                        <option>Paquete 2</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="CantidadNoches" class="form-label">Noches</label>
+                    <input asp-for="CantidadNoches" class="form-control" type="number" placeholder="Cantidad de noches" />
+                </div>
+                <div class="col-md-4">
+                    <label for="CantidadPersonas" class="form-label">Personas</label>
+                    <input asp-for="CantidadPersonas" class="form-control" type="number" placeholder="Cantidad de personas" />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="Descuento" class="form-label">Descuento aplicable</label>
+                    <input asp-for="Descuento" class="form-control" readonly />
+                </div>
+                <div class="col-md-6">
+                    <label for="TotalPagar" class="form-label">Total a pagar</label>
+                    <input asp-for="TotalPagar" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="Prima" class="form-label">Prima</label>
+                    <input asp-for="Prima" class="form-control" readonly />
+                </div>
+                <div class="col-md-6">
+                    <label for="CuotasPendientes" class="form-label">Cuotas pendientes</label>
+                    <input asp-for="CuotasPendientes" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="MontoCuota" class="form-label">Monto cuota</label>
+                    <input asp-for="MontoCuota" class="form-control" readonly />
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- Botón para procesar -->
+        <div class="text-center">
+            <button type="submit" class="btn btn-warning px-5">Procesar reservación</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
