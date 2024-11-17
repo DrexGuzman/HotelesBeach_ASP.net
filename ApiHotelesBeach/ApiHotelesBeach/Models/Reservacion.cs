@@ -34,7 +34,7 @@ namespace ApiHotelesBeach.Models
         public FormaPago FormaPago { get; set; }
 
         [Required(ErrorMessage = "Debe indicar el cliente que hace la reservación")]
-        public int ClienteId { get; set; }
-        public Cliente Cliente { get; set; }
+        public string ClienteCedula { get; set; }
+        public Usuario Usuario { get; set; }
     }
 }
