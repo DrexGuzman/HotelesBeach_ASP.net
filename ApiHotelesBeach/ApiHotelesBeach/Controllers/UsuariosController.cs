@@ -236,5 +236,27 @@ namespace ApiHotelesBeach.Controllers
             }
         }
 
+        [HttpDelete("Eliminar/{cedula}")]
+        public async Task<IActionResult> Eliminar(string cedula)
+        {
+            var usuario = _context.Usuarios.FirstOrDefault(x => x.Cedula == cedula);
+            if (usuario == null)
+            {
+                return NotFound($"Usuario con cédula {cedula} no encontrado.");
+            }
+
+            try
+            {
+                _context.Usuarios.Remove(usuario);
+                await _context.SaveChangesAsync();
+                return Ok($"Usuario {usuario.NombreCompleto} eliminado exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al eliminar el usuario {usuario.NombreCompleto}. Detalle: {ex.Message}");
+            }
+        }
+
+
     }
 }
