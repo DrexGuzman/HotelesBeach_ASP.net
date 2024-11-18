@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ApiHotelesBeach.Models
 {
@@ -13,9 +14,11 @@ namespace ApiHotelesBeach.Models
         [StringLength(100)]
         public string Nombre { get; set; }
 
+        [Column(TypeName = "decimal(18, 4)")]
         [Required(ErrorMessage = "Debe indicar el costo del paquete")]
         public decimal Costo { get; set; }
 
+        [Column(TypeName = "decimal(18, 4)")]
         [Required(ErrorMessage = "Debe indicar la prima del paquete")]
         public decimal Prima { get; set; }
 

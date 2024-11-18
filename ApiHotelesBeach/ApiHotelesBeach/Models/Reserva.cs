@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ApiHotelesBeach.Models
 {
-    public class Reservacion
+    public class Reserva
     {
         [Key]
         public int Id { get; set; }
@@ -16,12 +16,15 @@ namespace ApiHotelesBeach.Models
         [Range(1, 8)]
         public int CantidadPersonas { get; set; }
 
+        [Column(TypeName = "decimal(18, 4)")]
         [Required(ErrorMessage = "Debe indicar el descuento a realizar en la reserva")]
         public decimal Descuento { get; set; }
 
+        [Column(TypeName = "decimal(18, 4)")]
         [Required(ErrorMessage = "Debe indicar el monto de la reserva sin el descuento y con el IVA aplicado")]
         public decimal MontoRebajado { get; set; }
 
+        [Column(TypeName = "decimal(18, 4)")]
         [Required(ErrorMessage = "Debe indicar el monto final total de la reserva")]
         public decimal MontoFinal { get; set; }
 

@@ -11,6 +11,9 @@ namespace ApiHotelesBeach.Data
         }
 
         public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Paquete> Paquetes { get; set; }
+        public DbSet<Reserva> Reservas { get; set; }
+        public DbSet<FormaPago> FormasPago { get; set; }
 
     }
 }
