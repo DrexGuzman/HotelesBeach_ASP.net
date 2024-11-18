@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace ApiHotelesBeach.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,10 +21,10 @@ namespace ApiHotelesBeach.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Numero = table.Column<int>(type: "int", nullable: false),
-                    Banco = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    CVV = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FechaExpiracion = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NombreTitular = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    Banco = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    CVV = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FechaExpiracion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NombreTitular = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -77,8 +79,7 @@ namespace ApiHotelesBeach.Migrations
                     MontoFinal = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
                     PaqueteId = table.Column<int>(type: "int", nullable: false),
                     FormaPagoId = table.Column<int>(type: "int", nullable: false),
-                    ClienteCedula = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UsuarioCedula = table.Column<string>(type: "nvarchar(20)", nullable: false)
+                    ClienteCedula = table.Column<string>(type: "nvarchar(20)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -88,20 +89,34 @@ namespace ApiHotelesBeach.Migrations
                         column: x => x.FormaPagoId,
                         principalTable: "FormasPago",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Reservas_Paquetes_PaqueteId",
                         column: x => x.PaqueteId,
                         principalTable: "Paquetes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Reservas_Usuarios_UsuarioCedula",
-                        column: x => x.UsuarioCedula,
+                        name: "FK_Reservas_Usuarios_ClienteCedula",
+                        column: x => x.ClienteCedula,
                         principalTable: "Usuarios",
                         principalColumn: "Cedula",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "FormasPago",
+                columns: new[] { "Id", "Banco", "CVV", "FechaExpiracion", "Nombre", "NombreTitular", "Numero" },
+                values: new object[,]
+                {
+                    { 1, null, null, null, "Efectivo", null, 0 },
+                    { 2, "Banco Nacional", "123", "12/25", "Tarjeta de Crédito", "Juan Pérez", 1010101 }
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reservas_ClienteCedula",
+                table: "Reservas",
+                column: "ClienteCedula");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reservas_FormaPagoId",
@@ -112,11 +127,6 @@ namespace ApiHotelesBeach.Migrations
                 name: "IX_Reservas_PaqueteId",
                 table: "Reservas",
                 column: "PaqueteId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Reservas_UsuarioCedula",
-                table: "Reservas",
-                column: "UsuarioCedula");
         }
 
         /// <inheritdoc />

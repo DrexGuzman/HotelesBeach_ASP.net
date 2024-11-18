@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiHotelesBeach.Migrations
 {
     [DbContext(typeof(DbContextHotel))]
-    [Migration("20241117235846_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241118173750_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,16 +34,13 @@ namespace ApiHotelesBeach.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Banco")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("CVV")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FechaExpiracion")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nombre")
@@ -52,7 +49,6 @@ namespace ApiHotelesBeach.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("NombreTitular")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -62,6 +58,24 @@ namespace ApiHotelesBeach.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FormasPago");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nombre = "Efectivo",
+                            Numero = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Banco = "Banco Nacional",
+                            CVV = "123",
+                            FechaExpiracion = "12/25",
+                            Nombre = "Tarjeta de Crédito",
+                            NombreTitular = "Juan Pérez",
+                            Numero = 1010101
+                        });
                 });
 
             modelBuilder.Entity("ApiHotelesBeach.Models.Paquete", b =>
@@ -107,7 +121,7 @@ namespace ApiHotelesBeach.Migrations
 
                     b.Property<string>("ClienteCedula")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<decimal>("Descuento")
                         .HasColumnType("decimal(18, 4)");
@@ -124,17 +138,13 @@ namespace ApiHotelesBeach.Migrations
                     b.Property<int>("PaqueteId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UsuarioCedula")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(20)");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("ClienteCedula");
 
                     b.HasIndex("FormaPagoId");
 
                     b.HasIndex("PaqueteId");
-
-                    b.HasIndex("UsuarioCedula");
 
                     b.ToTable("Reservas");
                 });
@@ -187,22 +197,22 @@ namespace ApiHotelesBeach.Migrations
 
             modelBuilder.Entity("ApiHotelesBeach.Models.Reserva", b =>
                 {
+                    b.HasOne("ApiHotelesBeach.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("ClienteCedula")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ApiHotelesBeach.Models.FormaPago", "FormaPago")
                         .WithMany()
                         .HasForeignKey("FormaPagoId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ApiHotelesBeach.Models.Paquete", "Paquete")
                         .WithMany()
                         .HasForeignKey("PaqueteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ApiHotelesBeach.Models.Usuario", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("UsuarioCedula")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("FormaPago");

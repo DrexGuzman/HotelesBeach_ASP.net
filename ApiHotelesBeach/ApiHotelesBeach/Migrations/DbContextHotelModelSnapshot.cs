@@ -118,7 +118,7 @@ namespace ApiHotelesBeach.Migrations
 
                     b.Property<string>("ClienteCedula")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<decimal>("Descuento")
                         .HasColumnType("decimal(18, 4)");
@@ -135,17 +135,13 @@ namespace ApiHotelesBeach.Migrations
                     b.Property<int>("PaqueteId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UsuarioCedula")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(20)");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("ClienteCedula");
 
                     b.HasIndex("FormaPagoId");
 
                     b.HasIndex("PaqueteId");
-
-                    b.HasIndex("UsuarioCedula");
 
                     b.ToTable("Reservas");
                 });
@@ -198,22 +194,22 @@ namespace ApiHotelesBeach.Migrations
 
             modelBuilder.Entity("ApiHotelesBeach.Models.Reserva", b =>
                 {
+                    b.HasOne("ApiHotelesBeach.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("ClienteCedula")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ApiHotelesBeach.Models.FormaPago", "FormaPago")
                         .WithMany()
                         .HasForeignKey("FormaPagoId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ApiHotelesBeach.Models.Paquete", "Paquete")
                         .WithMany()
                         .HasForeignKey("PaqueteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ApiHotelesBeach.Models.Usuario", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("UsuarioCedula")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("FormaPago");
