@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ApiHotelesBeach.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -112,6 +112,11 @@ namespace ApiHotelesBeach.Migrations
                     { 1, null, null, null, "Efectivo", null, 0 },
                     { 2, "Banco Nacional", "123", "12/25", "Tarjeta de Crédito", "Juan Pérez", 1010101 }
                 });
+
+            migrationBuilder.InsertData(
+                table: "Usuarios",
+                columns: new[] { "Cedula", "Direccion", "Email", "FechaRegistro", "NombreCompleto", "Password", "Telefono", "TipoCedula", "isAdmin" },
+                values: new object[] { "604880492", "Esparza Centro", "ashleycr33@gmail.com", new DateTime(2024, 11, 18, 14, 42, 41, 940, DateTimeKind.Local).AddTicks(4379), "Ashley Rojas Pérez", "ashley12345", "85272939", "FISICA", false });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reservas_ClienteCedula",

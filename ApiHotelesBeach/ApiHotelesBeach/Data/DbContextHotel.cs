@@ -17,6 +17,22 @@ namespace ApiHotelesBeach.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Seeders de Usuarios
+            modelBuilder.Entity<Usuario>().HasData(
+                new Usuario
+                {
+                    Cedula = "604880492",
+                    TipoCedula = "FISICA",
+                    NombreCompleto = "Ashley Rojas Pérez",
+                    Telefono = "85272939",
+                    Direccion = "Esparza Centro",
+                    Email = "ashleycr33@gmail.com",
+                    Password = "ashley12345",
+                    FechaRegistro = DateTime.Now,
+                    isAdmin = true,
+                }
+            );
+
             //seeders de forma de pago
             modelBuilder.Entity<FormaPago>().HasData(
                 new FormaPago

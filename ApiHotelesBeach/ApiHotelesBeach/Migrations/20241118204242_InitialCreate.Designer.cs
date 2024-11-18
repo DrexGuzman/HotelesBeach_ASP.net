@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiHotelesBeach.Migrations
 {
     [DbContext(typeof(DbContextHotel))]
-    [Migration("20241118173750_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20241118204242_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -193,6 +193,20 @@ namespace ApiHotelesBeach.Migrations
                     b.HasKey("Cedula");
 
                     b.ToTable("Usuarios");
+
+                    b.HasData(
+                        new
+                        {
+                            Cedula = "604880492",
+                            Direccion = "Esparza Centro",
+                            Email = "ashleycr33@gmail.com",
+                            FechaRegistro = new DateTime(2024, 11, 18, 14, 42, 41, 940, DateTimeKind.Local).AddTicks(4379),
+                            NombreCompleto = "Ashley Rojas Pérez",
+                            Password = "ashley12345",
+                            Telefono = "85272939",
+                            TipoCedula = "FISICA",
+                            isAdmin = false
+                        });
                 });
 
             modelBuilder.Entity("ApiHotelesBeach.Models.Reserva", b =>

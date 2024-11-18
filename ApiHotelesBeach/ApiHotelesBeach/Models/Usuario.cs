@@ -17,7 +17,6 @@ namespace ApiHotelesBeach.Models
         [StringLength(100)]
         public string NombreCompleto { get; set; }
 
-        [Required]
         [StringLength(15)]
         [Phone]
         public string Telefono { get; set; }
