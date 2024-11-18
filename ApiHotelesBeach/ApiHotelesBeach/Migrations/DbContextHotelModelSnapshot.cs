@@ -164,6 +164,9 @@ namespace ApiHotelesBeach.Migrations
                     b.Property<DateTime>("FechaRegistro")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("bit");
+
                     b.Property<string>("NombreCompleto")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -184,9 +187,6 @@ namespace ApiHotelesBeach.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<bool>("isAdmin")
-                        .HasColumnType("bit");
-
                     b.HasKey("Cedula");
 
                     b.ToTable("Usuarios");
@@ -197,12 +197,12 @@ namespace ApiHotelesBeach.Migrations
                             Cedula = "604880492",
                             Direccion = "Esparza Centro",
                             Email = "ashleycr33@gmail.com",
-                            FechaRegistro = new DateTime(2024, 11, 18, 14, 42, 41, 940, DateTimeKind.Local).AddTicks(4379),
+                            FechaRegistro = new DateTime(2024, 11, 18, 15, 45, 44, 47, DateTimeKind.Local).AddTicks(660),
+                            IsAdmin = true,
                             NombreCompleto = "Ashley Rojas Pérez",
                             Password = "ashley12345",
                             Telefono = "85272939",
-                            TipoCedula = "FISICA",
-                            isAdmin = false
+                            TipoCedula = "FISICA"
                         });
                 });
 

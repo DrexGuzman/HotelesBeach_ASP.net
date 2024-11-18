@@ -11,11 +11,11 @@ namespace ApiHotelesBeach.Models
 
         [Required]
         [StringLength(10)]
-        public string TipoCedula { get; set; }
+        public string? TipoCedula { get; set; }
 
         [Required]
         [StringLength(100)]
-        public string NombreCompleto { get; set; }
+        public string? NombreCompleto { get; set; }
 
         [StringLength(15)]
         [Phone]
@@ -52,6 +52,6 @@ namespace ApiHotelesBeach.Models
         }
 
         [Required(ErrorMessage = "Debe indicar si el usuario es o no un administrador")]
-        public bool isAdmin { get; set; }
+        public bool IsAdmin { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace ApiHotelesBeach.Data
                     Email = "ashleycr33@gmail.com",
                     Password = "ashley12345",
                     FechaRegistro = DateTime.Now,
-                    isAdmin = true,
+                    IsAdmin = true,
                 }
             );
 

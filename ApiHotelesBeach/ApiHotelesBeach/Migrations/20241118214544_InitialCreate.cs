@@ -59,7 +59,7 @@ namespace ApiHotelesBeach.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     FechaRegistro = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    isAdmin = table.Column<bool>(type: "bit", nullable: false)
+                    IsAdmin = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -115,8 +115,8 @@ namespace ApiHotelesBeach.Migrations
 
             migrationBuilder.InsertData(
                 table: "Usuarios",
-                columns: new[] { "Cedula", "Direccion", "Email", "FechaRegistro", "NombreCompleto", "Password", "Telefono", "TipoCedula", "isAdmin" },
-                values: new object[] { "604880492", "Esparza Centro", "ashleycr33@gmail.com", new DateTime(2024, 11, 18, 14, 42, 41, 940, DateTimeKind.Local).AddTicks(4379), "Ashley Rojas Pérez", "ashley12345", "85272939", "FISICA", false });
+                columns: new[] { "Cedula", "Direccion", "Email", "FechaRegistro", "IsAdmin", "NombreCompleto", "Password", "Telefono", "TipoCedula" },
+                values: new object[] { "604880492", "Esparza Centro", "ashleycr33@gmail.com", new DateTime(2024, 11, 18, 15, 45, 44, 47, DateTimeKind.Local).AddTicks(660), true, "Ashley Rojas Pérez", "ashley12345", "85272939", "FISICA" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reservas_ClienteCedula",
