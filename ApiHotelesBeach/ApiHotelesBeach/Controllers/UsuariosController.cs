@@ -68,37 +68,34 @@ namespace ApiHotelesBeach.Controllers
         }
 
         [HttpPost("Agregar")]
-        public async Task<string> Agregar([FromBody] UsuarioDto usuarioDto, string confirmar)
+        public async Task<IActionResult> Agregar([FromBody] UsuarioDto usuarioDto, string confirmar)
         {
-            string mensaje = "Debe ingresar la información completa del usuario";
-
             if (usuarioDto == null)
             {
-                return mensaje;
+                return BadRequest("Debe ingresar la información completa del usuario");
             }
 
-            if (usuarioDto.Cedula.Length<9)
+            if (usuarioDto.Cedula.Length < 9)
             {
-                mensaje = "La cédula del usuario debe tener 9 carácteres o más.";
-                return mensaje;
+                return BadRequest("La cédula del usuario debe tener 9 carácteres o más.");
             }
 
             if (!usuarioDto.Password.Equals(confirmar))
             {
-                return "La confirmación de la contraseña ha fallado.";
+                return BadRequest("La confirmación de la contraseña ha fallado.");
             }
 
             var existentUser = _context.Usuarios.FirstOrDefault(x => x.Cedula == usuarioDto.Cedula);
             if (existentUser != null)
             {
-                return "Ya existe un usuario asociado a la cédula ingresada.";
+                return Conflict("Ya existe un usuario asociado a la cédula ingresada.");
             }
 
             // Consultar API de GOMETA para completar campos
             var (fullName, guessType) = await ConsultarApiGometa(usuarioDto.Cedula);
             if (string.IsNullOrEmpty(fullName) || string.IsNullOrEmpty(guessType))
             {
-                return "No se pudo encontrar información sobre el usuario en la API de GOMETA.";
+                return BadRequest("No se pudo encontrar información sobre el usuario en la API de GOMETA.");
             }
 
             // Crear la instancia de Usuario
@@ -115,24 +112,22 @@ namespace ApiHotelesBeach.Controllers
                 FechaRegistro = DateTime.Now
             };
 
-            mensaje = ValidarPassword(usuario.Password, usuario.NombreCompleto);
+            string mensaje = ValidarPassword(usuario.Password, usuario.NombreCompleto);
             if (!string.IsNullOrEmpty(mensaje))
             {
-                return mensaje;
+                return BadRequest(mensaje);
             }
 
             try
             {
                 await _context.Usuarios.AddAsync(usuario);
                 await _context.SaveChangesAsync();
-                mensaje = $"Usuario {usuario.NombreCompleto} agregado exitosamente";
+                return Ok($"Usuario {usuario.NombreCompleto} agregado exitosamente");
             }
             catch (Exception ex)
             {
-                mensaje = $"Error al agregar el usuario {usuario.NombreCompleto}. Detalle: {ex.Message}";
+                return StatusCode(500, $"Error al agregar el usuario {usuario.NombreCompleto}. Detalle: {ex.Message}");
             }
-
-            return mensaje;
         }
 
 
@@ -166,6 +161,20 @@ namespace ApiHotelesBeach.Controllers
                 }
             }
             return (null, null);
+        }
+
+
+        [HttpGet("Buscar/{cedula}")]
+        public IActionResult Buscar(string cedula)
+        {
+            var usuario = _context.Usuarios.FirstOrDefault(x => x.Cedula == cedula);
+
+            if (usuario == null)
+            {
+                return NotFound($"Usuario con cédula {cedula} no encontrado.");
+            }
+
+            return Ok(usuario);
         }
 
 
