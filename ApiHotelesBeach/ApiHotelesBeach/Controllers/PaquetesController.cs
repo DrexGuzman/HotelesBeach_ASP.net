@@ -2,6 +2,8 @@
 using ApiHotelesBeach.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.RateLimiting;
 
 namespace ApiHotelesBeach.Controllers
 {
@@ -25,7 +27,7 @@ namespace ApiHotelesBeach.Controllers
         }
 
         [HttpPost("Agregar")]
-        public async Task<string> Agregar (Paquete paquete)
+        public async Task<string> Agregar(Paquete paquete)
         {
             string mensaje = "";
             if (paquete == null)
@@ -63,6 +65,37 @@ namespace ApiHotelesBeach.Controllers
             }
 
             return mensaje;
+        }
+
+        [HttpPut("Editar")]
+        public async Task<string> Editar(Paquete temp)
+        {
+            var paquete = _context.Paquetes.FirstOrDefault(x => x.Id == temp.Id);
+            string mensaje = "";
+            if (paquete == null)
+            {
+                mensaje = $"El paquete {temp.Nombre} no existe";
+                return mensaje;
+            }
+
+            try
+            {
+                paquete.Nombre = temp.Nombre;
+                paquete.Costo = temp.Costo;
+                paquete.Prima = temp.Prima;
+                paquete.Mensualidades = temp.Mensualidades;
+
+                _context.Paquetes.Update(paquete);
+                await _context.SaveChangesAsync();
+                mensaje = $"Paquete {paquete.Nombre} actualizado correctamente";
+                return mensaje;
+            }
+            catch (Exception ex)
+            {
+
+                mensaje = $"Error al actualizar el Paquete: {ex.Message}";
+                return mensaje;
+            }
         }
     }
 }
