@@ -1,5 +1,6 @@
 ﻿using ApiHotelesBeach.Data;
 using ApiHotelesBeach.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiHotelesBeach.Controllers
@@ -45,6 +46,23 @@ namespace ApiHotelesBeach.Controllers
                 mensaje = $"Error al guardar el paquete: {ex.Message}";
                 return mensaje;
             }
-        } 
+        }
+
+        [HttpDelete("Eliminar")]
+        public async Task<string> Eliminar(int id)
+        {
+            string mensaje = $"Paquete no eliminado, {id} no existe";
+
+            Paquete temp = _context.Paquetes.FirstOrDefault(x => x.Id == id);
+
+            if (temp != null)
+            {
+                _context.Paquetes.Remove(temp);
+                await _context.SaveChangesAsync();
+                mensaje = $"Paquete {temp.Nombre} eliminado correctamente";
+            }
+
+            return mensaje;
+        }
     }
 }
