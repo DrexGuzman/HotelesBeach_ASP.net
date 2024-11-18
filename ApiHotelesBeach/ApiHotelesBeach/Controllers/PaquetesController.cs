@@ -97,5 +97,13 @@ namespace ApiHotelesBeach.Controllers
                 return mensaje;
             }
         }
+
+        [HttpGet("Buscar")]
+        public Paquete Buscar(int id)
+        {
+            Paquete paquete = _context.Paquetes.FirstOrDefault(u => u.Id == id);
+
+            return paquete == null ? new Paquete { Nombre = "No existe" } : paquete;
+        }
     }
 }
