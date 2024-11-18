@@ -77,6 +77,12 @@ namespace ApiHotelesBeach.Controllers
                 return mensaje;
             }
 
+            if (usuarioDto.Cedula.Length<9)
+            {
+                mensaje = "La cédula del usuario debe tener 9 carácteres o más.";
+                return mensaje;
+            }
+
             if (!usuarioDto.Password.Equals(confirmar))
             {
                 return "La confirmación de la contraseña ha fallado.";
@@ -128,7 +134,6 @@ namespace ApiHotelesBeach.Controllers
 
             return mensaje;
         }
-
 
 
         // Método para consultar la API de GOMETA
