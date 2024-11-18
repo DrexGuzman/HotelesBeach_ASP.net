@@ -177,6 +177,64 @@ namespace ApiHotelesBeach.Controllers
             return Ok(usuario);
         }
 
+        [HttpPut("Actualizar/{cedula}")]
+        public async Task<IActionResult> Actualizar(string cedula, [FromBody] UsuarioDto usuarioDto, string confirmar)
+        {
+            if (usuarioDto == null)
+            {
+                return BadRequest("Debe ingresar la información completa del usuario");
+            }
+
+            var usuario = _context.Usuarios.FirstOrDefault(x => x.Cedula == cedula);
+            if (usuario == null)
+            {
+                return NotFound($"Usuario con cédula {cedula} no encontrado.");
+            }
+
+            // Verificar si la cédula es única
+            var existentUserByCedula = _context.Usuarios.FirstOrDefault(x => x.Cedula == usuarioDto.Cedula && x.Cedula != cedula);
+            if (existentUserByCedula != null)
+            {
+                return Conflict("Ya existe un usuario asociado a la cédula ingresada.");
+            }
+
+            // Verificar si el correo electrónico es único
+            var existentUserByEmail = _context.Usuarios.FirstOrDefault(x => x.Email == usuarioDto.Email && x.Email != usuario.Email);
+            if (existentUserByEmail != null)
+            {
+                return Conflict("Ya existe un usuario asociado al correo electrónico ingresado.");
+            }
+
+
+            // Validación de contraseña
+            if (!usuarioDto.Password.Equals(confirmar))
+            {
+                return BadRequest("La confirmación de la contraseña ha fallado.");
+            }
+
+            // Actualizar los campos del usuario
+            usuario.Telefono = usuarioDto.Telefono;
+            usuario.Direccion = usuarioDto.Direccion;
+            usuario.Email = usuarioDto.Email;
+            usuario.Password = usuarioDto.Password;
+
+            string mensaje = ValidarPassword(usuario.Password, usuario.NombreCompleto);
+            if (!string.IsNullOrEmpty(mensaje))
+            {
+                return BadRequest(mensaje);
+            }
+
+            try
+            {
+                _context.Usuarios.Update(usuario);
+                await _context.SaveChangesAsync();
+                return Ok($"Usuario {usuario.NombreCompleto} actualizado exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al actualizar el usuario {usuario.NombreCompleto}. Detalle: {ex.Message}");
+            }
+        }
 
     }
 }
