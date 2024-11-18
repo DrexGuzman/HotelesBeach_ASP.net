@@ -1,4 +1,5 @@
 ﻿using ApiHotelesBeach.Data;
+using ApiHotelesBeach.Dto;
 using ApiHotelesBeach.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -67,38 +68,46 @@ namespace ApiHotelesBeach.Controllers
         }
 
         [HttpPost("Agregar")]
-        public async Task<string> Agregar(Usuario usuario, string confirmar)
+        public async Task<string> Agregar([FromBody] UsuarioDto usuarioDto, string confirmar)
         {
             string mensaje = "Debe ingresar la información completa del usuario";
 
-            if (usuario == null)
+            if (usuarioDto == null)
             {
                 return mensaje;
             }
 
-            if (!usuario.Password.Equals(confirmar))
+            if (!usuarioDto.Password.Equals(confirmar))
             {
                 return "La confirmación de la contraseña ha fallado.";
             }
 
-            var existentUser = _context.Usuarios.FirstOrDefault(x => x.Cedula == usuario.Cedula);
+            var existentUser = _context.Usuarios.FirstOrDefault(x => x.Cedula == usuarioDto.Cedula);
             if (existentUser != null)
             {
                 return "Ya existe un usuario asociado a la cédula ingresada.";
             }
 
             // Consultar API de GOMETA para completar campos
-            var (fullName, guessType) = await ConsultarApiGometa(usuario.Cedula);
+            var (fullName, guessType) = await ConsultarApiGometa(usuarioDto.Cedula);
             if (string.IsNullOrEmpty(fullName) || string.IsNullOrEmpty(guessType))
             {
                 return "No se pudo encontrar información sobre el usuario en la API de GOMETA.";
             }
 
-            usuario.NombreCompleto = fullName;
-            usuario.TipoCedula = guessType;
-
-            // Sobrescribir el valor de IsAdmin a false siempre
-            usuario.IsAdmin = false;
+            // Crear la instancia de Usuario
+            var usuario = new Usuario
+            {
+                Cedula = usuarioDto.Cedula,
+                Telefono = usuarioDto.Telefono,
+                Direccion = usuarioDto.Direccion,
+                Email = usuarioDto.Email,
+                Password = usuarioDto.Password,
+                NombreCompleto = fullName,
+                TipoCedula = guessType,
+                IsAdmin = false, // Por defecto todos los usuarios son no administradores
+                FechaRegistro = DateTime.Now
+            };
 
             mensaje = ValidarPassword(usuario.Password, usuario.NombreCompleto);
             if (!string.IsNullOrEmpty(mensaje))
@@ -108,7 +117,6 @@ namespace ApiHotelesBeach.Controllers
 
             try
             {
-                usuario.FechaRegistro = DateTime.Now;
                 await _context.Usuarios.AddAsync(usuario);
                 await _context.SaveChangesAsync();
                 mensaje = $"Usuario {usuario.NombreCompleto} agregado exitosamente";
@@ -120,6 +128,7 @@ namespace ApiHotelesBeach.Controllers
 
             return mensaje;
         }
+
 
 
         // Método para consultar la API de GOMETA
