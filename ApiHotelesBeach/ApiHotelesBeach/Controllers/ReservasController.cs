@@ -51,51 +51,8 @@ namespace ApiHotelesBeach.Controllers
                 return "El paquete elegido no existe.";
             }
 
-            decimal descuento = 0.0m;
-            if (reservaDto.CantidadNoches <= 3 && reservaDto.CantidadNoches >= 6)
-            {
-                descuento = 0.10m;
-            }
-            else if (reservaDto.CantidadNoches <= 7 && reservaDto.CantidadNoches >= 9)
-            {
-                descuento = 0.15m;
-            }
-            else if (reservaDto.CantidadNoches <= 10 && reservaDto.CantidadNoches >= 12)
-            {
-                descuento = 0.20m;
-            }
-            else if (reservaDto.CantidadNoches <= 13)
-            {
-                descuento = 0.25m;
-            };
-            FormaPago formaPago = null;
-
-            switch (reservaDto.NombreFormaPago)
-            {
-                case "Tarjeta":
-                    formaPago = new FormaPago
-                    {
-                        Nombre = reservaDto.NombreFormaPago,
-                        Numero = reservaDto.Numero,
-                        Banco = reservaDto.Banco,
-                        CVV = reservaDto.CVV,
-                        FechaExpiracion = reservaDto.FechaExpiracion,
-                        NombreTitular = reservaDto.NombreTitular
-                    };
-                    break;
-
-                case "Cheque":
-                    formaPago = new FormaPago
-                    {
-                        Nombre = reservaDto.NombreFormaPago,
-                        Numero = reservaDto.Numero,
-                        NombreTitular = reservaDto.NombreTitular
-                    };
-                    break;
-
-                default:
-                    break;
-            }
+            var descuento = CalcularDescuento(reservaDto.CantidadNoches);
+            var formaPago = CrearFormaPago(reservaDto);
 
             if (formaPago != null)
             {
@@ -143,6 +100,42 @@ namespace ApiHotelesBeach.Controllers
             {
                 return $"Error al crear la reservación: {ex.Message}";
             }
+        }
+
+        private decimal CalcularDescuento(int cantidadNoches)
+        {
+            if (cantidadNoches >= 3 && cantidadNoches <= 6)
+                return 0.10m;
+            if (cantidadNoches >= 7 && cantidadNoches <= 9)
+                return 0.15m;
+            if (cantidadNoches >= 10 && cantidadNoches <= 12)
+                return 0.20m;
+            if (cantidadNoches > 13)
+                return 0.25m;
+            return 0.0m;
+        }
+
+        private FormaPago CrearFormaPago(ReservaCreateDto reservaDto)
+        {
+            return reservaDto.NombreFormaPago switch
+            {
+                "Tarjeta" => new FormaPago
+                {
+                    Nombre = reservaDto.NombreFormaPago,
+                    Numero = reservaDto.Numero,
+                    Banco = reservaDto.Banco,
+                    CVV = reservaDto.CVV,
+                    FechaExpiracion = reservaDto.FechaExpiracion,
+                    NombreTitular = reservaDto.NombreTitular
+                },
+                "Cheque" => new FormaPago
+                {
+                    Nombre = reservaDto.NombreFormaPago,
+                    Numero = reservaDto.Numero,
+                    NombreTitular = reservaDto.NombreTitular
+                },
+                _ => null
+            };
         }
 
         [HttpGet("Buscar/{id}")]
