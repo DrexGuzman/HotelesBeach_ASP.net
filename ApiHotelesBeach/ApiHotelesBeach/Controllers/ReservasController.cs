@@ -51,14 +51,8 @@ namespace ApiHotelesBeach.Controllers
                 return "El paquete elegido no existe.";
             }
 
-            var formaPagoExiste = await _context.FormasPago.FindAsync(reservaDto.FormaPagoId);
-            if (formaPagoExiste == null)
-            {
-                return "La forma de pago indicada no existe.";
-            }
-
             decimal descuento = 0.0m;
-            if (reservaDto.CantidadNoches <=3 && reservaDto.CantidadNoches>=6)
+            if (reservaDto.CantidadNoches <= 3 && reservaDto.CantidadNoches >= 6)
             {
                 descuento = 0.10m;
             }
@@ -74,6 +68,48 @@ namespace ApiHotelesBeach.Controllers
             {
                 descuento = 0.25m;
             };
+            FormaPago formaPago = null;
+
+            switch (reservaDto.NombreFormaPago)
+            {
+                case "Tarjeta":
+                    formaPago = new FormaPago
+                    {
+                        Nombre = reservaDto.NombreFormaPago,
+                        Numero = reservaDto.Numero,
+                        Banco = reservaDto.Banco,
+                        CVV = reservaDto.CVV,
+                        FechaExpiracion = reservaDto.FechaExpiracion,
+                        NombreTitular = reservaDto.NombreTitular
+                    };
+                    break;
+
+                case "Cheque":
+                    formaPago = new FormaPago
+                    {
+                        Nombre = reservaDto.NombreFormaPago,
+                        Numero = reservaDto.Numero,
+                        NombreTitular = reservaDto.NombreTitular
+                    };
+                    break;
+
+                default:
+                    break;
+            }
+
+            if (formaPago != null)
+            {
+                try
+                {
+                    _context.FormasPago.Add(formaPago);
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
+            }
 
             var montoTotal = (paqueteExiste.Costo * reservaDto.CantidadPersonas) * reservaDto.CantidadNoches;
 
@@ -93,7 +129,7 @@ namespace ApiHotelesBeach.Controllers
                 Prima = prima,
                 PagoMes = pagoMes,
                 PaqueteId = reservaDto.PaqueteId,
-                FormaPagoId = reservaDto.FormaPagoId,
+                FormaPagoId = formaPago != null ? formaPago.Id : 1,
                 ClienteCedula = reservaDto.ClienteCedula
             };
 
