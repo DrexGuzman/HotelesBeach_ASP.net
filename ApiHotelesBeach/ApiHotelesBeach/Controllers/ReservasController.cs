@@ -1,4 +1,5 @@
 ﻿using ApiHotelesBeach.Data;
+using ApiHotelesBeach.Dto;
 using ApiHotelesBeach.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
