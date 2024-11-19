@@ -3,6 +3,8 @@ using ApiHotelesBeach.Dto;
 using ApiHotelesBeach.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using System.Globalization;
 
 namespace ApiHotelesBeach.Controllers
 {
@@ -76,13 +78,16 @@ namespace ApiHotelesBeach.Controllers
 
             var pagoMes = (montoDescuento - prima) / paqueteExiste.Mensualidades;
 
+            var montoTotalColones = await ConvertirAColones(montoTotal);
+
             var reserva = new Reserva
             {
                 CantidadNoches = reservaDto.CantidadNoches,
                 CantidadPersonas = reservaDto.CantidadPersonas,
-                Descuento = descuento,
+                Descuento = (int)(descuento * 100),
                 MontoRebajado = montoDescuento,
                 MontoFinal = montoTotal,
+                MontoFinalColones = montoTotalColones,
                 Prima = prima,
                 PagoMes = pagoMes,
                 PaqueteId = reservaDto.PaqueteId,
@@ -113,6 +118,53 @@ namespace ApiHotelesBeach.Controllers
             if (cantidadNoches > 13)
                 return 0.25m;
             return 0.0m;
+        }
+
+        private async Task<decimal> ConvertirAColones(decimal montoEnDolares)
+        {
+            string apiUrl = "https://apis.gometa.org/tdc/tdc.json";
+            decimal tipoCambio = 0;
+
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    var response = await client.GetAsync(apiUrl);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var jsonResponse = await response.Content.ReadAsStringAsync();
+
+                        dynamic data = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
+
+                        if (data != null && data.venta != null)
+                        {
+                            tipoCambio = Convert.ToDecimal(data.venta.ToString(), CultureInfo.InvariantCulture);
+                        }
+                        else
+                        {
+                            throw new Exception("El campo 'venta' no se encontró en la respuesta de la API.");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception($"Error en la solicitud a la API: {response.StatusCode}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al consultar la API: {ex.Message}");
+                    throw new Exception("No se pudo obtener el tipo de cambio.");
+                }
+            }
+
+            if (tipoCambio == 0)
+            {
+                throw new Exception("No se pudo obtener el tipo de cambio.");
+            }
+
+            decimal montoEnColones = montoEnDolares * tipoCambio;
+
+            return montoEnColones;
         }
 
         private FormaPago CrearFormaPago(ReservaCreateDto reservaDto)
@@ -174,5 +226,29 @@ namespace ApiHotelesBeach.Controllers
 
             return Ok(reservas);
         }
+
+        [HttpDelete("Eliminar/{id}")]
+        public IActionResult Eliminar(int id)
+        {
+            var reserva = _context.Reservas.FirstOrDefault(x => x.Id == id);
+
+            if (reserva == null)
+            {
+                return NotFound(new { mensaje = $"No se ha encontrado una reserva con el ID: {id}" });
+            }
+
+            try
+            {
+                _context.Reservas.Remove(reserva);
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Ocurrió un error al intentar eliminar la reserva.", detalle = ex.Message });
+            }
+
+            return Ok(new { mensaje = "Reserva eliminada exitosamente.", reservaEliminada = reserva });
+        }
+
     }
 }
