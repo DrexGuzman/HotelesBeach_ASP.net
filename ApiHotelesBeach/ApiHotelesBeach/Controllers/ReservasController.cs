@@ -1,4 +1,5 @@
 ﻿using ApiHotelesBeach.Data;
+using ApiHotelesBeach.Dto;
 using ApiHotelesBeach.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -56,13 +57,35 @@ namespace ApiHotelesBeach.Controllers
                 return "La forma de pago indicada no existe.";
             }
 
+            decimal descuento = 0.0m;
+            if (reservaDto.CantidadNoches <=3 && reservaDto.CantidadNoches>=6)
+            {
+                descuento = 0.10m;
+            }
+            else if (reservaDto.CantidadNoches <= 7 && reservaDto.CantidadNoches >= 9)
+            {
+                descuento = 0.15m;
+            }
+            else if (reservaDto.CantidadNoches <= 10 && reservaDto.CantidadNoches >= 12)
+            {
+                descuento = 0.20m;
+            }
+            else if (reservaDto.CantidadNoches <= 13)
+            {
+                descuento = 0.25m;
+            };
+
+            var montoTotal = (paqueteExiste.Costo * reservaDto.CantidadPersonas) * reservaDto.CantidadNoches;
+
+            var montoDescuento = montoTotal * descuento;
+
             var reserva = new Reserva
             {
                 CantidadNoches = reservaDto.CantidadNoches,
                 CantidadPersonas = reservaDto.CantidadPersonas,
-                Descuento = reservaDto.Descuento,
-                MontoRebajado = reservaDto.MontoRebajado,
-                MontoFinal = reservaDto.MontoFinal,
+                Descuento = descuento,
+                MontoRebajado = montoDescuento,
+                MontoFinal = montoTotal,
                 PaqueteId = reservaDto.PaqueteId,
                 FormaPagoId = reservaDto.FormaPagoId,
                 ClienteCedula = reservaDto.ClienteCedula
