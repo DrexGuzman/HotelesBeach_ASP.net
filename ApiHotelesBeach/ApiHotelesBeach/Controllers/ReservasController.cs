@@ -77,7 +77,11 @@ namespace ApiHotelesBeach.Controllers
 
             var montoTotal = (paqueteExiste.Costo * reservaDto.CantidadPersonas) * reservaDto.CantidadNoches;
 
-            var montoDescuento = montoTotal * descuento;
+            var montoDescuento = montoTotal - (montoTotal * descuento);
+
+            var prima = montoDescuento * paqueteExiste.Prima;
+
+            var pagoMes = (montoDescuento - prima) / paqueteExiste.Mensualidades;
 
             var reserva = new Reserva
             {
@@ -86,6 +90,8 @@ namespace ApiHotelesBeach.Controllers
                 Descuento = descuento,
                 MontoRebajado = montoDescuento,
                 MontoFinal = montoTotal,
+                Prima = prima,
+                PagoMes = pagoMes,
                 PaqueteId = reservaDto.PaqueteId,
                 FormaPagoId = reservaDto.FormaPagoId,
                 ClienteCedula = reservaDto.ClienteCedula
