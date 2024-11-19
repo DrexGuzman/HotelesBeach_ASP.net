@@ -20,3 +20,11 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.botonR {
+    background: #FC9937;
+    padding: 1rem 3rem;
+    border-radius: 1rem;
+    margin-left: 6rem;
+    color: rgb(8, 8, 8);
+}
