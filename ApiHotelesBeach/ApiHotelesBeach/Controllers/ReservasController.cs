@@ -126,5 +126,24 @@ namespace ApiHotelesBeach.Controllers
 
             return Ok( reserva );
         }
+
+        [HttpGet("BuscarPorUsuario/{cedula}")]
+        public IActionResult BuscarPorUsuario(string cedula)
+        {
+            
+            var reservas = _context.Reservas
+                .Include(a => a.Usuario)
+                .Include(a => a.Paquete)
+                .Include(a => a.FormaPago)
+                .Where(x => x.Usuario.Cedula == cedula)
+                .ToList();
+
+            if (reservas == null || reservas.Count == 0)
+            {
+                return NotFound($"No se encontraron reservas para el usuario con ID: {cedula}");
+            }
+
+            return Ok(reservas);
+        }
     }
 }
