@@ -1,7 +1,10 @@
 ﻿using ApiHotelesBeach.Data;
 using ApiHotelesBeach.Dto;
 using ApiHotelesBeach.Models;
+using ApiHotelesBeach.Models.Custom;
+using ApiHotelesBeach.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 
@@ -12,10 +15,12 @@ namespace ApiHotelesBeach.Controllers
     public class UsuariosController : Controller
     {
         private readonly DbContextHotel _context = null;
+        private readonly IAutorizacionServices _autorizacionServices;
 
-        public UsuariosController(DbContextHotel pContext)
+        public UsuariosController(DbContextHotel pContext, IAutorizacionServices autorizacionServices)
         {
             _context = pContext;
+            _autorizacionServices = autorizacionServices;
         }
 
         [HttpGet("Listado")]
@@ -257,6 +262,27 @@ namespace ApiHotelesBeach.Controllers
             }
         }
 
-
+        [HttpPost]
+        [Route("Login")]
+        public async Task<IActionResult> Login(string email, string password)
+        {
+            var temp = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email.Equals(email) && u.Password.Equals(password));
+            if (temp == null)
+            {
+                return Unauthorized(new AutorizacionResponse() { Token = "", Msj = "No autorizado", Resultado = false });
+            }
+            else
+            {
+                var autorizado = await _autorizacionServices.DevolverToken(temp);
+                if (autorizado == null)
+                {
+                    return Unauthorized(new AutorizacionResponse() { Token = "", Msj = "No autorizado", Resultado = false });
+                }
+                else
+                {
+                    return Ok(autorizado);
+                }
+            }
+        }
     }
 }

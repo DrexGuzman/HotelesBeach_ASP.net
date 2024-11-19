@@ -72,7 +72,7 @@ namespace ApiHotelesBeach.Services
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = claims,
-                Expires = DateTime.UtcNow.AddMinutes(5), // El token expirará después de 3 minutos
+                Expires = DateTime.UtcNow.AddMinutes(30), // El token expirará después de 10 minutos
                 SigningCredentials = credencialesToken // Se asignan las credenciales
             };
 
