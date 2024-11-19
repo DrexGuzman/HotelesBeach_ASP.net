@@ -102,5 +102,23 @@ namespace ApiHotelesBeach.Controllers
                 return $"Error al crear la reservación: {ex.Message}";
             }
         }
+
+        [HttpGet("Buscar/{id}")]
+        public IActionResult Buscar(int id)
+        {
+            Reserva reserva = _context.Reservas
+                .Include(a => a.Usuario)
+                .Include(a => a.Paquete)
+                .Include(a => a.FormaPago)
+                .FirstOrDefault(x => x.Id == id);
+
+            if( reserva == null)
+            {
+                return NotFound($"No se ha encontrado una reserva con el id: {id}");
+            }
+            
+
+            return Ok( reserva );
+        }
     }
 }
