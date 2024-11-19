@@ -9,15 +9,15 @@
     <link rel="stylesheet" href="~/HotelesBeachProyecto.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <div>
-        <img src="./css/fondo.png" class="position-absolute order-1" alt="fondo" />
+    <div class="d-block">
+        <img src="./css/fondo.png" class="position-absolute order-1 " alt="fondo" />
         <header>
             <nav class="navbar navbar-expand-md navbar-toggleable-sm navbar-light box-shadow mb-3 flex-row justify-content-center">
-                <div class="d-flex gap-xl-5">
+                <div class="d-flex gap-xl-5 ">
                     <a class="navbar-brand me-xxl-5" asp-area="" asp-controller="Home" asp-action="Index">
                         <img src="./css/logo.png" alt="Alternate Text" />
                     </a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    <button class="navbar-toggler h-25" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                             aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
@@ -27,11 +27,11 @@
                                 <a class="nav-link fw-bold text-white" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
                             </li>
                             <li class="nav-item mx-2">
-                                <a class="nav-link fw-bold text-white" asp-area="" asp-controller="Reservaciones" asp-action="NuevaReserva">Reservas</a>
+                                <a class="nav-link fw-bold text-white" asp-area="" asp-controller="Reservas" asp-action="Create">Reservas</a>
                             </li>
 
                             <li class="nav-item mx-2">
-                                <a class="nav-link fw-bold text-white" asp-area="" asp-controller="Home" asp-action="Privacy">Paquetes</a>
+                                <a class="nav-link fw-bold text-white" asp-area="" asp-controller="Paquetes" asp-action="Index">Paquetes</a>
                             </li>
 
                             <li class="nav-item mx-2">
@@ -41,14 +41,14 @@
 
 
                             <li class="nav-item mx-2">
-                                <a class="nav-link fw-bold text-white" asp-area="" asp-controller="Home" asp-action="Privacy">Iniciar Sesion</a>
+                                <a class="nav-link fw-bold text-white" asp-area="" asp-controller="Usuarios" asp-action="Login">Iniciar Sesion</a>
                             </li>
                         </ul>
                     </div>
                 </div>
             </nav>
         </header>
-        <div class="container position-relative">
+        <div class="position-relative">
             <main role="main" class="pb-3">
                 @RenderBody()
             </main>
@@ -56,7 +56,7 @@
     </div>
 
         <footer class="footer text-muted">
-            <div class="container-fluid text-center">
+            <div class="container-fluid text-center text-black">
                 &copy; 2024 - HotelesBeachProyecto - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
             </div>
         </footer>
