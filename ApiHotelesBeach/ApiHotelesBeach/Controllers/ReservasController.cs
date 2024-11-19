@@ -57,13 +57,41 @@ namespace ApiHotelesBeach.Controllers
                 return "La forma de pago indicada no existe.";
             }
 
+            decimal descuento = 0.0m;
+            if (reservaDto.CantidadNoches <=3 && reservaDto.CantidadNoches>=6)
+            {
+                descuento = 0.10m;
+            }
+            else if (reservaDto.CantidadNoches <= 7 && reservaDto.CantidadNoches >= 9)
+            {
+                descuento = 0.15m;
+            }
+            else if (reservaDto.CantidadNoches <= 10 && reservaDto.CantidadNoches >= 12)
+            {
+                descuento = 0.20m;
+            }
+            else if (reservaDto.CantidadNoches <= 13)
+            {
+                descuento = 0.25m;
+            };
+
+            var montoTotal = (paqueteExiste.Costo * reservaDto.CantidadPersonas) * reservaDto.CantidadNoches;
+
+            var montoDescuento = montoTotal - (montoTotal * descuento);
+
+            var prima = montoDescuento * paqueteExiste.Prima;
+
+            var pagoMes = (montoDescuento - prima) / paqueteExiste.Mensualidades;
+
             var reserva = new Reserva
             {
                 CantidadNoches = reservaDto.CantidadNoches,
                 CantidadPersonas = reservaDto.CantidadPersonas,
-                Descuento = reservaDto.Descuento,
-                MontoRebajado = reservaDto.MontoRebajado,
-                MontoFinal = reservaDto.MontoFinal,
+                Descuento = descuento,
+                MontoRebajado = montoDescuento,
+                MontoFinal = montoTotal,
+                Prima = prima,
+                PagoMes = pagoMes,
                 PaqueteId = reservaDto.PaqueteId,
                 FormaPagoId = reservaDto.FormaPagoId,
                 ClienteCedula = reservaDto.ClienteCedula
@@ -79,6 +107,43 @@ namespace ApiHotelesBeach.Controllers
             {
                 return $"Error al crear la reservación: {ex.Message}";
             }
+        }
+
+        [HttpGet("Buscar/{id}")]
+        public IActionResult Buscar(int id)
+        {
+            Reserva reserva = _context.Reservas
+                .Include(a => a.Usuario)
+                .Include(a => a.Paquete)
+                .Include(a => a.FormaPago)
+                .FirstOrDefault(x => x.Id == id);
+
+            if( reserva == null)
+            {
+                return NotFound($"No se ha encontrado una reserva con el id: {id}");
+            }
+            
+
+            return Ok( reserva );
+        }
+
+        [HttpGet("BuscarPorUsuario/{cedula}")]
+        public IActionResult BuscarPorUsuario(string cedula)
+        {
+            
+            var reservas = _context.Reservas
+                .Include(a => a.Usuario)
+                .Include(a => a.Paquete)
+                .Include(a => a.FormaPago)
+                .Where(x => x.Usuario.Cedula == cedula)
+                .ToList();
+
+            if (reservas == null || reservas.Count == 0)
+            {
+                return NotFound($"No se encontraron reservas para el usuario con ID: {cedula}");
+            }
+
+            return Ok(reservas);
         }
     }
 }

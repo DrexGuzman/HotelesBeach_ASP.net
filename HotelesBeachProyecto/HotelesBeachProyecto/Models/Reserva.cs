@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ApiHotelesBeach.Models
+namespace HotelesBeachProyecto.Models
 {
     public class Reserva
     {
@@ -27,14 +27,6 @@ namespace ApiHotelesBeach.Models
         [Column(TypeName = "decimal(18, 4)")]
         [Required(ErrorMessage = "Debe indicar el monto final total de la reserva")]
         public decimal MontoFinal { get; set; }
-
-        [Column(TypeName = "decimal(18, 4)")]
-        [Required]
-        public decimal Prima { get; set; }
-
-        [Column(TypeName = "decimal(18, 4)")]
-        [Required]
-        public decimal PagoMes {  get; set; }
 
         [Required(ErrorMessage = "Debe indicar el paquete elegido")]
         public int PaqueteId { get; set; }
