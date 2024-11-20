@@ -272,9 +272,9 @@ namespace ApiHotelesBeach.Controllers
 
         private FormaPago CrearFormaPago(ReservaCreateDto reservaDto)
         {
-            return reservaDto.NombreFormaPago switch
+            return reservaDto.NombreFormaPago.ToLower() switch
             {
-                "Tarjeta" => new FormaPago
+                "tarjeta" => new FormaPago
                 {
                     Nombre = reservaDto.NombreFormaPago,
                     Numero = reservaDto.Numero,
@@ -283,7 +283,7 @@ namespace ApiHotelesBeach.Controllers
                     FechaExpiracion = reservaDto.FechaExpiracion,
                     NombreTitular = reservaDto.NombreTitular
                 },
-                "Cheque" => new FormaPago
+                "cheque" => new FormaPago
                 {
                     Nombre = reservaDto.NombreFormaPago,
                     Numero = reservaDto.Numero,
