@@ -18,7 +18,6 @@ namespace ApiHotelesBeach.Controllers
             _context = pContext;
         }
 
-        [Authorize]
         [HttpGet("Listado")]
         public List<Paquete> Listado()
         {
