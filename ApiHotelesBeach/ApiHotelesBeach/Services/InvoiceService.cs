@@ -61,11 +61,24 @@ namespace ApiHotelesBeach.Services
             reservaInfo.AddLineBreak();
             reservaInfo.AddText($"Cantidad de Personas: {reserva.CantidadPersonas}");
             reservaInfo.AddLineBreak();
-            reservaInfo.AddText($"Descuento Aplicado: {reserva.Descuento * 100}%");
+
+            reservaInfo.AddText($"Paquete: {reserva.Paquete.Nombre}");
             reservaInfo.AddLineBreak();
-            reservaInfo.AddText($"Monto Rebajado: {reserva.MontoRebajado:C}");
+            reservaInfo.AddText($"Costo Paquete: {reserva.Paquete.Costo.ToString("C", new System.Globalization.CultureInfo("en-US"))} por persona");
             reservaInfo.AddLineBreak();
-            reservaInfo.AddText($"Monto Final: {reserva.MontoFinal:C}");
+
+            // Calcular el descuento y monto rebajado
+            decimal descuentoAplicado = reserva.Descuento / 100m; // Descuento en formato decimal (0.10 -> 10%)
+            decimal montoRebajado = reserva.Paquete.Costo * reserva.CantidadPersonas * descuentoAplicado;
+            decimal montoFinal = (reserva.Paquete.Costo * reserva.CantidadPersonas) - montoRebajado;
+
+            reservaInfo.AddText($"Descuento Aplicado: {descuentoAplicado * 100:0}%"); // Eliminar decimales extras
+            reservaInfo.AddLineBreak();
+            reservaInfo.AddText($"Monto Rebajado: {reserva.MontoRebajado.ToString("C", new System.Globalization.CultureInfo("en-US"))}");
+            reservaInfo.AddLineBreak();
+            reservaInfo.AddText($"Monto Final Dólares: {reserva.MontoFinal.ToString("C", new System.Globalization.CultureInfo("en-US"))}");
+            reservaInfo.AddLineBreak();
+            reservaInfo.AddText($"Monto Final Colones: {reserva.MontoFinalColones:C}");
             reservaInfo.AddLineBreak();
             reservaInfo.AddLineBreak();
 
