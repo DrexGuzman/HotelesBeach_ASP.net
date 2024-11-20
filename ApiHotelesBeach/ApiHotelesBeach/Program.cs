@@ -7,7 +7,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddTransient<IServicioEmail, ServicioEmail>();
 
 // Add services to the container.
 
@@ -18,6 +18,8 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("StringConexion")
 
 // Configurar servicio de JWT
 builder.Services.AddScoped<IAutorizacionServices, AutorizacionServices>();
+
+builder.Services.AddScoped<EmailSender>();
 
 // Configurar el servicio de PDF
 builder.Services.AddScoped<InvoiceService>();

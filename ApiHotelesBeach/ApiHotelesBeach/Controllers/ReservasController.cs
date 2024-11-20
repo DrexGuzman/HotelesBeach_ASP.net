@@ -16,13 +16,13 @@ namespace ApiHotelesBeach.Controllers
     {
         private readonly DbContextHotel _context = null;
         private readonly InvoiceService _invoiceService;
-        private readonly IEmailSender _emailSender;
+        private readonly IServicioEmail _servicioEmail;
 
-        public ReservasController(DbContextHotel pContext, InvoiceService invoiceService, IEmailSender emailSender)
+        public ReservasController(DbContextHotel pContext, InvoiceService invoiceService, IServicioEmail servicioEmail)
         {
             _context = pContext;
             _invoiceService = invoiceService;
-            this._emailSender = emailSender;
+            _servicioEmail = servicioEmail;
         }
 
         [HttpGet("Listado")]
@@ -35,6 +35,21 @@ namespace ApiHotelesBeach.Controllers
                 .Include(a => a.FormaPago)
                 .ToList();
             return reservas;
+        }
+
+        [HttpPost("enviar-correo")]
+        public async Task<IActionResult> EnviarCorreo([FromBody] EmailRequestDto emailRequest)
+        {
+            try
+            {
+                // Usamos _servicioEmail para enviar el correo
+                await _servicioEmail.EnviarEmail(emailRequest.EmailReceptor, emailRequest.Tema, emailRequest.Cuerpo);
+                return Ok("Correo enviado exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al enviar el correo: {ex.Message}");
+            }
         }
 
         [HttpPost("Agregar")]
@@ -113,22 +128,7 @@ namespace ApiHotelesBeach.Controllers
                 return StatusCode(500, $"Error al crear la reserva: {ex.Message}");
             }
 
-            // Generar PDF
-            var pdf = _invoiceService.GetInvoice(reserva);
-            using (var stream = new MemoryStream())
-            {
-                pdf.Save(stream, false);
-                stream.Position = 0;
-                var pdfBytes = stream.ToArray();
-
-                // Enviar PDF por correo al correo del usuario
-                var emailSubject = "Confirmación de Reserva";
-                var emailMessage = "Gracias por su reservación. Adjuntamos su confirmación en formato PDF.";
-                await _emailSender.SendEmailAsync(usuarioExiste.Email, emailSubject, emailMessage, pdfBytes);
-
-                // Retornar respuesta con mensaje de éxito
-                return Ok(new { mensaje = "Reserva realizada con éxito y el PDF ha sido enviado por correo." });
-            }
+            return Ok(new { mensaje = "Reserva realizada con éxito y el PDF ha sido enviado por correo." });
         }
 
 
