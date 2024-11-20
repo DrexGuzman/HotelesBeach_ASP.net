@@ -39,6 +39,11 @@ namespace HotelesBeachProyecto.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        public IActionResult Register()
+        {
+            return View();
+        }
+
         // GET: Usuarios/Logout
         public ActionResult Logout()
         {

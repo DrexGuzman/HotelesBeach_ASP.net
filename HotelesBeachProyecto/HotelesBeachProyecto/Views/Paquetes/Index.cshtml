@@ -15,11 +15,11 @@
             <div class="col-md-4 mb-4">
                 <div class="card h-100 shadow">
                     <div class="card-body text-center">
-                        <h5 class="card-title">@paquete.Nombre $@paquete.Costo</h5>
+                        <h5 class="card-title">@paquete.Nombre $@(Math.Round(paquete.Costo).ToString("0"))</h5>
                         <p class="card-text">Precio por noche por persona</p>
                         <ul class="list-unstyled">
                             <li>🥂 Cocktail de bienvenida</li>
-                            <li>💵 @paquete.Prima% de prima</li>
+                            <li>💵 @(Math.Round(paquete.Prima * 100).ToString("0"))% de prima</li>
                             <li>📆 Saldo en @paquete.Mensualidades cuotas</li>
                         </ul>
                         <a href="@Url.Action("Reservar", "Paquetes", new { id = paquete.Id })" class="btn btn-warning">Reservar</a>
