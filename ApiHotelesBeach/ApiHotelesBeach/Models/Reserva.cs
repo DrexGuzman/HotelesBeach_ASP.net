@@ -29,6 +29,10 @@ namespace ApiHotelesBeach.Models
         public decimal MontoFinal { get; set; }
 
         [Column(TypeName = "decimal(18, 4)")]
+        [Required(ErrorMessage = "Debe indicar el monto final total en colones de la reserva")]
+        public decimal MontoFinalColones { get; set; }
+
+        [Column(TypeName = "decimal(18, 4)")]
         [Required]
         public decimal Prima { get; set; }
 
