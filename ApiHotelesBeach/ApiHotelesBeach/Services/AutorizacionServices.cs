@@ -53,7 +53,7 @@ namespace ApiHotelesBeach.Services
         public string GenerarToken(string IDUsuario)
         {
             // Se realiza la lectura de la key almacenad dentro del archivo de configuración JSON
-            var key = _configuration.GetValue<string>("JwtSettings:key");
+            var key = _configuration.GetValue<string>("CONFIGURACIONES_JWT:KEY");
 
             // Se convierte la key en un vector de bytes
             var KeyBytes = Encoding.ASCII.GetBytes(key);
