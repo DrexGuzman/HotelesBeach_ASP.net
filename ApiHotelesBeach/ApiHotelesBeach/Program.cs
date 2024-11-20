@@ -1,34 +1,45 @@
 using ApiHotelesBeach;
 using ApiHotelesBeach.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configuración desde secrets.json
+builder.Configuration.AddUserSecrets<Program>();
+
+// Configuración del servicio de Email
 builder.Services.AddTransient<IServicioEmail, ServicioEmail>();
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 
+// Construir el string de conexión desde secrets.json
+var connectionString = new SqlConnectionStringBuilder
+{
+    DataSource = builder.Configuration.GetValue<string>("CONFIGURACIONES_STRING:SERVER"),
+    InitialCatalog = builder.Configuration.GetValue<string>("CONFIGURACIONES_STRING:DATABASE"),
+    UserID = builder.Configuration.GetValue<string>("CONFIGURACIONES_STRING:USER"),
+    Password = builder.Configuration.GetValue<string>("CONFIGURACIONES_STRING:PASSWORD"),
+    TrustServerCertificate = builder.Configuration.GetValue<bool>("CONFIGURACIONES_STRING:TrustServerCertificate")
+}.ConnectionString;
+
+// Registrar el DbContext usando el string de conexión construido
 builder.Services.AddDbContext<ApiHotelesBeach.Data.DbContextHotel>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("StringConexion")));
+    options.UseSqlServer(connectionString));
 
-// Configurar servicio de JWT
+// Configurar servicios personalizados
 builder.Services.AddScoped<IAutorizacionServices, AutorizacionServices>();
-
 builder.Services.AddScoped<ServicioEmail>();
-
-// Configurar el servicio de PDF
 builder.Services.AddScoped<InvoiceService>();
 
-// Se toma la llave a utilizar para generar el token
-var key = builder.Configuration.GetValue<string>("JwtSettings:Key");
-var keyBytes = Encoding.ASCII.GetBytes(key);
+// Configurar servicio de JWT
+var jwtKey = builder.Configuration.GetValue<string>("CONFIGURACIONES_JWT:KEY");
+var jwtKeyBytes = Encoding.ASCII.GetBytes(jwtKey);
 
-// Se configura el esquema de autenticación
 builder.Services.AddAuthentication(config =>
 {
     config.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -37,14 +48,14 @@ builder.Services.AddAuthentication(config =>
 {
     config.RequireHttpsMetadata = false;
     config.SaveToken = true;
-    config.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
+    config.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuerSigningKey = true, // Validar la key para el inicio de sesión
-        IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
-        ValidateIssuer = false, // No se valida el emisor
-        ValidateAudience = false, // No se valida la audiencia
-        ValidateLifetime = true, // No se valida la vida del token
-        ClockSkew = TimeSpan.Zero, // No debe existir diferencia del tiempo del reloj
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(jwtKeyBytes),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero,
     };
 });
 
@@ -63,9 +74,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Configuración de authenticación JWT
+// Configuración de autenticación JWT
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.MapControllers();
