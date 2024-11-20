@@ -1,16 +1,28 @@
-﻿
+﻿@model HotelesBeachProyecto.Models.Usuario
+
 @{
-    ViewData["Title"] = "Login";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Register";
 }
 
 <div class="container mt-5 d-flex justify-content-center">
     <div class="card p-4" style="width: 30rem;">
         <div class="text-center">
-            <h3>Ingresa a tu cuenta</h3>
+            <h3>Crear una cuenta</h3>
         </div>
         <form method="post" action="/Usuarios/Login">
             @Html.AntiForgeryToken()
+            <div class="form-group mt-3">
+                <label for="Cedula">Identificación</label>
+                <input class="form-control" id="cedula" name="cedula" placeholder="Identificación" required />
+            </div>
+            <div class="form-group mt-3">
+                <label for="Telefono">Teléfono</label>
+                <input class="form-control" id="telefono" name="telefono" placeholder="Teléfono" required />
+            </div>
+            <div class="form-group mt-3">
+                <label for="Direccion">Domicilio</label>
+                <input class="form-control" id="domicilio" name="domicilio" placeholder="Domicilio" required />
+            </div>
             <div class="form-group mt-3">
                 <label for="email">Correo</label>
                 <input type="email" class="form-control" id="email" name="email" placeholder="Correo" required />
@@ -27,7 +39,7 @@
                 <button type="submit" class="btn btn-warning w-100">Iniciar sesión</button>
             </div>
             <div class="text-center mt-2">
-                <small>¿Eres nuevo? <a href="/Usuarios/Register">Regístrate</a></small>
+                <small>¿Ya tienes cuenta? <a href="/Usuarios/Login">Inicia sesión</a></small>
             </div>
         </form>
     </div>
