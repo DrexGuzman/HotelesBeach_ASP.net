@@ -17,12 +17,14 @@ namespace ApiHotelesBeach.Controllers
         private readonly DbContextHotel _context = null;
         private readonly InvoiceService _invoiceService;
         private readonly IServicioEmail _servicioEmail;
+        private readonly ILogger<ReservasController> _logger;
 
-        public ReservasController(DbContextHotel pContext, InvoiceService invoiceService, IServicioEmail servicioEmail)
+        public ReservasController(DbContextHotel pContext, InvoiceService invoiceService, IServicioEmail servicioEmail, ILogger<ReservasController> logger)
         {
             _context = pContext;
             _invoiceService = invoiceService;
             _servicioEmail = servicioEmail;
+            _logger = logger;
         }
 
         [HttpGet("Listado")]
@@ -128,8 +130,64 @@ namespace ApiHotelesBeach.Controllers
                 return StatusCode(500, $"Error al crear la reserva: {ex.Message}");
             }
 
-            return Ok(new { mensaje = "Reserva realizada con éxito y el PDF ha sido enviado por correo." });
+            // Generar el PDF después de guardar la reserva
+            var pdfResult = GenerarPDF(reserva.Id);
+            if (pdfResult is NotFoundObjectResult)
+            {
+                return StatusCode(500, "No se pudo generar el PDF de la reserva.");
+            }
+
+            // Crear un archivo adjunto con el PDF generado
+            var pdfBytes = ((FileContentResult)pdfResult).FileContents;
+
+            // Crear el email y enviarlo con el PDF adjunto
+            var emailRequest = new EmailRequestDto
+            {
+                EmailReceptor = usuarioExiste.Email,
+                Tema = "Confirmación de Reserva",
+                Cuerpo = "¡Gracias por tu reserva! Aquí tienes el PDF con los detalles de la misma.",
+                ArchivosAdjuntos = new List<AdjuntoDto>
+        {
+            new AdjuntoDto
+            {
+                NombreArchivo = $"Reserva_{reserva.Id}.pdf",
+                Contenido = pdfBytes
+            }
         }
+            };
+
+            // Validación de los parámetros antes de enviar el correo
+            if (string.IsNullOrEmpty(emailRequest.EmailReceptor))
+            {
+                return BadRequest("El correo electrónico del receptor no puede estar vacío.");
+            }
+            if (string.IsNullOrEmpty(emailRequest.Tema))
+            {
+                return BadRequest("El tema del correo no puede estar vacío.");
+            }
+            if (string.IsNullOrEmpty(emailRequest.Cuerpo))
+            {
+                return BadRequest("El cuerpo del correo no puede estar vacío.");
+            }
+            if (emailRequest.ArchivosAdjuntos == null || emailRequest.ArchivosAdjuntos.Count == 0)
+            {
+                return BadRequest("El correo debe contener al menos un archivo adjunto.");
+            }
+
+            try
+            {
+                await _servicioEmail.EnviarEmailConAdjuntos(emailRequest);
+                return Ok(new { mensaje = "Reserva realizada con éxito y el PDF ha sido enviado por correo." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al enviar el correo: {Message}", ex.Message);
+                // Devuelve más información sobre el error, como el mensaje y el stack trace
+                return StatusCode(500, $"Error al enviar el correo: {ex.Message}. Detalles del error: {ex.StackTrace}");
+            }
+        }
+
+
 
 
         [HttpGet("GenerarPDF/{id}")]
@@ -248,19 +306,19 @@ namespace ApiHotelesBeach.Controllers
                 .Include(a => a.FormaPago)
                 .FirstOrDefault(x => x.Id == id);
 
-            if( reserva == null)
+            if (reserva == null)
             {
                 return NotFound($"No se ha encontrado una reserva con el id: {id}");
             }
-            
 
-            return Ok( reserva );
+
+            return Ok(reserva);
         }
 
         [HttpGet("BuscarPorUsuario/{cedula}")]
         public IActionResult BuscarPorUsuario(string cedula)
         {
-            
+
             var reservas = _context.Reservas
                 .Include(a => a.Usuario)
                 .Include(a => a.Paquete)
