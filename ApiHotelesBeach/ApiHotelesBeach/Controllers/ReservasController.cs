@@ -1,6 +1,7 @@
 ﻿using ApiHotelesBeach.Data;
 using ApiHotelesBeach.Dto;
 using ApiHotelesBeach.Models;
+using ApiHotelesBeach.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -13,10 +14,12 @@ namespace ApiHotelesBeach.Controllers
     public class ReservasController : Controller
     {
         private readonly DbContextHotel _context = null;
+        private readonly InvoiceService _invoiceService;
 
-        public ReservasController(DbContextHotel pContext)
+        public ReservasController(DbContextHotel pContext, InvoiceService invoiceService)
         {
             _context = pContext;
+            _invoiceService = invoiceService;
         }
 
         [HttpGet("Listado")]
@@ -32,25 +35,23 @@ namespace ApiHotelesBeach.Controllers
         }
 
         [HttpPost("Agregar")]
-        public async Task<string> Agregar([FromBody] ReservaCreateDto reservaDto)
+        public async Task<IActionResult> Agregar([FromBody] ReservaCreateDto reservaDto)
         {
-            string mensaje = "Reserva creada correctamente";
-
             if (reservaDto == null)
             {
-                return "La reservación no puede ser nula.";
+                return BadRequest("La reservación no puede ser nula.");
             }
 
             var usuarioExiste = await _context.Usuarios.FirstOrDefaultAsync(u => u.Cedula == reservaDto.ClienteCedula);
             if (usuarioExiste == null)
             {
-                return "No se encontró un usuario con esa cédula.";
+                return NotFound("No se encontró un usuario con esa cédula.");
             }
 
             var paqueteExiste = await _context.Paquetes.FindAsync(reservaDto.PaqueteId);
             if (paqueteExiste == null)
             {
-                return "El paquete elegido no existe.";
+                return NotFound("El paquete elegido no existe.");
             }
 
             var descuento = CalcularDescuento(reservaDto.CantidadNoches);
@@ -65,20 +66,24 @@ namespace ApiHotelesBeach.Controllers
                 }
                 catch (Exception ex)
                 {
-
-                    throw;
+                    return StatusCode(500, $"Error al guardar la forma de pago: {ex.Message}");
                 }
             }
 
             var montoTotal = (paqueteExiste.Costo * reservaDto.CantidadPersonas) * reservaDto.CantidadNoches;
-
             var montoDescuento = montoTotal - (montoTotal * descuento);
-
             var prima = montoDescuento * paqueteExiste.Prima;
-
             var pagoMes = (montoDescuento - prima) / paqueteExiste.Mensualidades;
 
-            var montoTotalColones = await ConvertirAColones(montoTotal);
+            decimal montoTotalColones;
+            try
+            {
+                montoTotalColones = await ConvertirAColones(montoTotal);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al calcular el monto en colones: {ex.Message}");
+            }
 
             var reserva = new Reserva
             {
@@ -99,11 +104,44 @@ namespace ApiHotelesBeach.Controllers
             {
                 _context.Reservas.Add(reserva);
                 await _context.SaveChangesAsync();
-                return mensaje;
             }
             catch (Exception ex)
             {
-                return $"Error al crear la reservación: {ex.Message}";
+                return StatusCode(500, $"Error al crear la reserva: {ex.Message}");
+            }
+
+            // Generar PDF
+            var pdf = _invoiceService.GetInvoice(reserva);
+            using (var stream = new MemoryStream())
+            {
+                pdf.Save(stream, false);
+                var pdfBytes = stream.ToArray();
+
+                return File(pdfBytes, "application/pdf", $"Reserva_{reserva.Id}.pdf");
+            }
+        }
+
+        [HttpGet("GenerarPDF/{id}")]
+        public IActionResult GenerarPDF(int id)
+        {
+            var reserva = _context.Reservas
+                .Include(a => a.Usuario)
+                .Include(a => a.Paquete)
+                .Include(a => a.FormaPago)
+                .FirstOrDefault(x => x.Id == id);
+
+            if (reserva == null)
+            {
+                return NotFound($"No se ha encontrado una reserva con el id: {id}");
+            }
+
+            var pdf = _invoiceService.GetInvoice(reserva);
+            using (var stream = new MemoryStream())
+            {
+                pdf.Save(stream, false);
+                var pdfBytes = stream.ToArray();
+
+                return File(pdfBytes, "application/pdf", $"Reserva_{id}.pdf");
             }
         }
 
