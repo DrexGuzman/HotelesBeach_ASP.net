@@ -86,25 +86,34 @@ namespace ApiHotelesBeach.Services
             var pagoInfo = section.AddParagraph();
             pagoInfo.AddFormattedText("Método de Pago", TextFormat.Bold);
             pagoInfo.AddLineBreak();
-            pagoInfo.AddText($"Forma de Pago: {reserva.FormaPago.Nombre}");
-            pagoInfo.AddLineBreak();
 
-            if (reserva.FormaPago.Numero.HasValue)
+            // Verificar si FormaPago es null
+            if (reserva.FormaPago != null)
             {
-                pagoInfo.AddText($"Número: {reserva.FormaPago.Numero}");
+                pagoInfo.AddText($"Forma de Pago: {reserva.FormaPago.Nombre}");
                 pagoInfo.AddLineBreak();
+
+                if (reserva.FormaPago.Numero.HasValue)
+                {
+                    pagoInfo.AddText($"Número: {reserva.FormaPago.Numero}");
+                    pagoInfo.AddLineBreak();
+                }
+
+                if (!string.IsNullOrEmpty(reserva.FormaPago.Banco))
+                {
+                    pagoInfo.AddText($"Banco: {reserva.FormaPago.Banco}");
+                    pagoInfo.AddLineBreak();
+                }
+
+                if (!string.IsNullOrEmpty(reserva.FormaPago.NombreTitular))
+                {
+                    pagoInfo.AddText($"Titular: {reserva.FormaPago.NombreTitular}");
+                    pagoInfo.AddLineBreak();
+                }
             }
-
-            if (!string.IsNullOrEmpty(reserva.FormaPago.Banco))
+            else
             {
-                pagoInfo.AddText($"Banco: {reserva.FormaPago.Banco}");
-                pagoInfo.AddLineBreak();
-            }
-
-            if (!string.IsNullOrEmpty(reserva.FormaPago.NombreTitular))
-            {
-                pagoInfo.AddText($"Titular: {reserva.FormaPago.NombreTitular}");
-                pagoInfo.AddLineBreak();
+                pagoInfo.AddText("Método de pago no especificado.");
             }
 
             pagoInfo.AddLineBreak();

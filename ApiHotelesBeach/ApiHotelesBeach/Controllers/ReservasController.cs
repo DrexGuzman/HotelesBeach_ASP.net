@@ -4,6 +4,7 @@ using ApiHotelesBeach.Models;
 using ApiHotelesBeach.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Newtonsoft.Json;
 using System.Globalization;
 
@@ -15,11 +16,13 @@ namespace ApiHotelesBeach.Controllers
     {
         private readonly DbContextHotel _context = null;
         private readonly InvoiceService _invoiceService;
+        private readonly IEmailSender _emailSender;
 
-        public ReservasController(DbContextHotel pContext, InvoiceService invoiceService)
+        public ReservasController(DbContextHotel pContext, InvoiceService invoiceService, IEmailSender emailSender)
         {
             _context = pContext;
             _invoiceService = invoiceService;
+            this._emailSender = emailSender;
         }
 
         [HttpGet("Listado")]
@@ -115,11 +118,19 @@ namespace ApiHotelesBeach.Controllers
             using (var stream = new MemoryStream())
             {
                 pdf.Save(stream, false);
+                stream.Position = 0;
                 var pdfBytes = stream.ToArray();
 
-                return File(pdfBytes, "application/pdf", $"Reserva_{reserva.Id}.pdf");
+                // Enviar PDF por correo al correo del usuario
+                var emailSubject = "Confirmación de Reserva";
+                var emailMessage = "Gracias por su reservación. Adjuntamos su confirmación en formato PDF.";
+                await _emailSender.SendEmailAsync(usuarioExiste.Email, emailSubject, emailMessage, pdfBytes);
+
+                // Retornar respuesta con mensaje de éxito
+                return Ok(new { mensaje = "Reserva realizada con éxito y el PDF ha sido enviado por correo." });
             }
         }
+
 
         [HttpGet("GenerarPDF/{id}")]
         public IActionResult GenerarPDF(int id)
