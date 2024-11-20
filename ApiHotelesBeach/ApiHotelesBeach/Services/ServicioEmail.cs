@@ -21,12 +21,9 @@ namespace ApiHotelesBeach.Services
         private readonly string host;
         private readonly int puerto;
 
-        // Constructor donde obtenemos las configuraciones una sola vez
         public ServicioEmail(IConfiguration configuration)
         {
             this.configuration = configuration;
-
-            // Inicializamos las variables globales
             emailEmisor = configuration.GetValue<string>("CONFIGURACIONES_EMAIL:EMAIL");
             password = configuration.GetValue<string>("CONFIGURACIONES_EMAIL:PASSWORD");
             host = configuration.GetValue<string>("CONFIGURACIONES_EMAIL:HOST");
@@ -39,7 +36,7 @@ namespace ApiHotelesBeach.Services
             {
                 EnableSsl = true,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(emailEmisor, password) // Aquí va la configuración de las credenciales
+                Credentials = new NetworkCredential(emailEmisor, password) 
             };
 
             var mensaje = new MailMessage(emailEmisor, emailReceptor, tema, cuerpo);
@@ -60,12 +57,11 @@ namespace ApiHotelesBeach.Services
             if (string.IsNullOrEmpty(emailRequest.Cuerpo))
                 throw new ArgumentException("El cuerpo del mensaje es obligatorio", nameof(emailRequest.Cuerpo));
 
-            // Configuración SMTP con las mismas credenciales
             using (var smtpClient = new SmtpClient(host, puerto))
             {
                 smtpClient.EnableSsl = true;
                 smtpClient.UseDefaultCredentials = false;
-                smtpClient.Credentials = new NetworkCredential(emailEmisor, password); // Aquí también configuramos las credenciales
+                smtpClient.Credentials = new NetworkCredential(emailEmisor, password); 
 
                 var mailMessage = new MailMessage
                 {
@@ -77,7 +73,6 @@ namespace ApiHotelesBeach.Services
 
                 mailMessage.To.Add(emailRequest.EmailReceptor);
 
-                // Agregar los archivos adjuntos
                 foreach (var archivo in emailRequest.ArchivosAdjuntos)
                 {
                     if (archivo == null || archivo.Contenido == null || archivo.Contenido.Length == 0)

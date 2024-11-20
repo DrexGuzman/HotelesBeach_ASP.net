@@ -19,7 +19,7 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("StringConexion")
 // Configurar servicio de JWT
 builder.Services.AddScoped<IAutorizacionServices, AutorizacionServices>();
 
-builder.Services.AddScoped<EmailSender>();
+builder.Services.AddScoped<ServicioEmail>();
 
 // Configurar el servicio de PDF
 builder.Services.AddScoped<InvoiceService>();
