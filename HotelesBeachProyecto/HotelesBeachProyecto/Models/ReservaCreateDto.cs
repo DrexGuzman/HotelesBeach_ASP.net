@@ -1,11 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-<<<<<<<< HEAD:ApiHotelesBeach/ApiHotelesBeach/Dto/ReservaCreateDto.cs
-namespace ApiHotelesBeach.Dto
-========
 namespace HotelesBeachProyecto.Models
->>>>>>>> dev:HotelesBeachProyecto/HotelesBeachProyecto/Models/ReservaCreateDto.cs
 {
     public class ReservaCreateDto
     {
