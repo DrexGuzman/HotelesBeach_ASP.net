@@ -44,7 +44,6 @@ namespace ApiHotelesBeach.Controllers
         {
             try
             {
-                // Usamos _servicioEmail para enviar el correo
                 await _servicioEmail.EnviarEmail(emailRequest.EmailReceptor, emailRequest.Tema, emailRequest.Cuerpo);
                 return Ok("Correo enviado exitosamente.");
             }
@@ -182,12 +181,9 @@ namespace ApiHotelesBeach.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al enviar el correo: {Message}", ex.Message);
-                // Devuelve más información sobre el error, como el mensaje y el stack trace
                 return StatusCode(500, $"Error al enviar el correo: {ex.Message}. Detalles del error: {ex.StackTrace}");
             }
         }
-
-
 
 
         [HttpGet("GenerarPDF/{id}")]
