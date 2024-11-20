@@ -16,6 +16,9 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("StringConexion")
 // Configurar servicio de JWT
 builder.Services.AddScoped<IAutorizacionServices, AutorizacionServices>();
 
+// Configurar el servicio de PDF
+builder.Services.AddScoped<InvoiceService>();
+
 // Se toma la llave a utilizar para generar el token
 var key = builder.Configuration.GetValue<string>("JwtSettings:Key");
 var keyBytes = Encoding.ASCII.GetBytes(key);
