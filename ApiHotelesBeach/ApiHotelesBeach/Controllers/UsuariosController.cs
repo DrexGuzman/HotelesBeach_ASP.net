@@ -3,6 +3,7 @@ using ApiHotelesBeach.Dto;
 using ApiHotelesBeach.Models;
 using ApiHotelesBeach.Models.Custom;
 using ApiHotelesBeach.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -23,6 +24,7 @@ namespace ApiHotelesBeach.Controllers
             _autorizacionServices = autorizacionServices;
         }
 
+        [Authorize]
         [HttpGet("Listado")]
         public List<Usuario> Listado()
         {
@@ -168,7 +170,7 @@ namespace ApiHotelesBeach.Controllers
             return (null, null);
         }
 
-
+        [Authorize]
         [HttpGet("Buscar/{cedula}")]
         public IActionResult Buscar(string cedula)
         {
@@ -182,6 +184,7 @@ namespace ApiHotelesBeach.Controllers
             return Ok(usuario);
         }
 
+        [Authorize]
         [HttpPut("Actualizar/{cedula}")]
         public async Task<IActionResult> Actualizar(string cedula, [FromBody] UsuarioEditarDto usuarioDto)
         {
@@ -228,6 +231,7 @@ namespace ApiHotelesBeach.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete("Eliminar/{cedula}")]
         public async Task<IActionResult> Eliminar(string cedula)
         {

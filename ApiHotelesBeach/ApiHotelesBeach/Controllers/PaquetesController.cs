@@ -18,6 +18,7 @@ namespace ApiHotelesBeach.Controllers
             _context = pContext;
         }
 
+        [Authorize]
         [HttpGet("Listado")]
         public List<Paquete> Listado()
         {
@@ -25,7 +26,7 @@ namespace ApiHotelesBeach.Controllers
             paquetes = _context.Paquetes.ToList();
             return paquetes;
         }
-
+        [Authorize]
         [HttpPost("Agregar")]
         public async Task<string> Agregar(Paquete paquete)
         {
@@ -50,6 +51,7 @@ namespace ApiHotelesBeach.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete("Eliminar")]
         public async Task<string> Eliminar(int id)
         {
@@ -67,6 +69,7 @@ namespace ApiHotelesBeach.Controllers
             return mensaje;
         }
 
+        [Authorize]
         [HttpPut("Editar")]
         public async Task<string> Editar(Paquete temp)
         {
@@ -98,6 +101,7 @@ namespace ApiHotelesBeach.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("Buscar")]
         public Paquete Buscar(int id)
         {
