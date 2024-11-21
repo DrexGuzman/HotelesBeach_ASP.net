@@ -34,9 +34,24 @@
                                 <a class="nav-link fw-bold text-white" asp-area="" asp-controller="Paquetes" asp-action="Index">Paquetes</a>
                             </li>
 
-                            <li class="nav-item mx-2">
-                                <a class="nav-link fw-bold text-white" asp-area="" asp-controller="Usuarios" asp-action="Login">Iniciar Sesion</a>
-                            </li>
+                            <ul class="navbar-nav">
+                                @if (User.Identity.IsAuthenticated)
+
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link fw-bold text-white" asp-area="" asp-controller="" asp-action="">Hola @User.Identity.Name</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link fw-bold text-white" asp-area="" asp-controller="Usuarios" asp-action="Logout">Cerrar sesión</a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="nav-item mx-2">
+                                        <a class="nav-link fw-bold text-white" asp-area="" asp-controller="Usuarios" asp-action="Login">Iniciar Sesion</a>
+                                    </li>
+                                }
+                            </ul>
                         </ul>
                     </div>
                 </div>
