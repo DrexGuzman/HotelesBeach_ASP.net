@@ -2,6 +2,7 @@
 using ApiHotelesBeach.Dto;
 using ApiHotelesBeach.Models;
 using ApiHotelesBeach.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
@@ -27,6 +28,7 @@ namespace ApiHotelesBeach.Controllers
             _logger = logger;
         }
 
+        [Authorize]
         [HttpGet("Listado")]
         public List<Reserva> Listado()
         {
@@ -53,6 +55,7 @@ namespace ApiHotelesBeach.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("Agregar")]
         public async Task<IActionResult> Agregar([FromBody] ReservaCreateDto reservaDto)
         {
@@ -185,7 +188,7 @@ namespace ApiHotelesBeach.Controllers
             }
         }
 
-
+        [Authorize]
         [HttpGet("GenerarPDF/{id}")]
         public IActionResult GenerarPDF(int id)
         {
@@ -272,9 +275,9 @@ namespace ApiHotelesBeach.Controllers
 
         private FormaPago CrearFormaPago(ReservaCreateDto reservaDto)
         {
-            return reservaDto.NombreFormaPago switch
+            return reservaDto.NombreFormaPago.ToLower() switch
             {
-                "Tarjeta" => new FormaPago
+                "tarjeta" => new FormaPago
                 {
                     Nombre = reservaDto.NombreFormaPago,
                     Numero = reservaDto.Numero,
@@ -283,7 +286,7 @@ namespace ApiHotelesBeach.Controllers
                     FechaExpiracion = reservaDto.FechaExpiracion,
                     NombreTitular = reservaDto.NombreTitular
                 },
-                "Cheque" => new FormaPago
+                "cheque" => new FormaPago
                 {
                     Nombre = reservaDto.NombreFormaPago,
                     Numero = reservaDto.Numero,
@@ -330,6 +333,7 @@ namespace ApiHotelesBeach.Controllers
             return Ok(reservas);
         }
 
+        [Authorize]
         [HttpDelete("Eliminar/{id}")]
         public IActionResult Eliminar(int id)
         {
