@@ -1,5 +1,7 @@
+using HotelesBeachProyecto.Data;
 using HotelesBeachProyecto.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace HotelesBeachProyecto.Controllers
@@ -8,6 +10,10 @@ namespace HotelesBeachProyecto.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
+        private HotelAPI hotelAPI;
+        private HttpClient client;
+
+      
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
@@ -28,5 +34,7 @@ namespace HotelesBeachProyecto.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+
     }
 }

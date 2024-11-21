@@ -1,0 +1,47 @@
+﻿@model HotelesBeachProyecto.Models.Paquete
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="d-flex flex-column align-items-center">
+  
+
+    <div class=" w-25 shadow p-4">
+        <h4 class="card-title mb-3">Detalles del Paquete</h4>
+        <hr />
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <div class="form-group mb-3">
+                <label asp-for="Nombre" class="form-label">Nombre</label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Costo" class="form-label">Costo</label>
+                <input asp-for="Costo" class="form-control" />
+                <span asp-validation-for="Costo" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Prima" class="form-label">Prima</label>
+                <input asp-for="Prima" class="form-control" />
+                <span asp-validation-for="Prima" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Mensualidades" class="form-label">Mensualidades</label>
+                <input asp-for="Mensualidades" class="form-control" />
+                <span asp-validation-for="Mensualidades" class="text-danger"></span>
+            </div>
+            <div class="form-group text-center">
+                <input type="submit" value="Crear" class="btn btn-primary me-2" />
+                <a asp-action="Index" class="btn btn-secondary">Volver a la Lista</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,59 @@
+﻿@model IEnumerable<HotelesBeachProyecto.Models.Paquete>
+
+@{
+    ViewData["Title"] = "GestionarPaquetes";
+}
+
+<h1>GestionarPaquetes</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nombre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Costo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Prima)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Mensualidades)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Costo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Prima)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Mensualidades)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
