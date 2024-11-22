@@ -64,5 +64,8 @@ namespace HotelesBeachProyecto.Controllers
             return RedirectToAction("Index");
         }
 
+
+
+
     }
 }

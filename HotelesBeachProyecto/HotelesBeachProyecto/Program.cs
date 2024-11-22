@@ -21,7 +21,7 @@ builder.Services.AddAuthentication("CookieAuthentication").AddCookie("CookieAuth
 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromSeconds(5);
+    options.IdleTimeout = TimeSpan.FromMinutes(20);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });

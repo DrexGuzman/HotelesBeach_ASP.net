@@ -8,19 +8,21 @@ using Microsoft.EntityFrameworkCore;
 using HotelesBeachProyecto.Data;
 using HotelesBeachProyecto.Models;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
+using Azure;
 
 namespace HotelesBeachProyecto.Controllers
 {
     public class GestionarPaquetesController : Controller
     {
-        private readonly DbContextHotel _context;
+       
         private HotelAPI hotelAPI;
         private HttpClient client;
 
 
-        public GestionarPaquetesController(DbContextHotel context)
+        public GestionarPaquetesController()
         {
-            _context = context;
+          
             hotelAPI = new HotelAPI();
             client = hotelAPI.Inicial();
         }
@@ -53,18 +55,23 @@ namespace HotelesBeachProyecto.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind] Paquete pPaquetre)
         {
+            client.DefaultRequestHeaders.Authorization = AutorizacionToken();
+
             pPaquetre.Id = 0;
-
-            //se asigna el token de autorización
-            //client.DefaultRequestHeaders.Authorization = AutorizacionToken();
-
-
+            //Se agregan el token en la transacción
+             
             var agregar = client.PostAsJsonAsync<Paquete>("/Paquetes/Agregar", pPaquetre);
 
             await agregar;  //se espera que termine la transacción
 
-            //Emmm vemos  el resultado
+            // vemos  el resultado
             var resultado = agregar.Result;
+
+            if (resultado.StatusCode.ToString().Equals("Unauthorized"))
+            {
+
+                return RedirectToAction("Login", "Usuarios");
+            }
 
             if (resultado.IsSuccessStatusCode) //si todo fue correcto
             {
@@ -82,12 +89,20 @@ namespace HotelesBeachProyecto.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            
+            //Se agregan el token en la transacción
+            client.DefaultRequestHeaders.Authorization = AutorizacionToken();
+
             var paquete = new Paquete();
             
             HttpResponseMessage response = await client.GetAsync($"/Paquetes/Buscar?id={id}");
 
-           
+            if (response.StatusCode.ToString().Equals("Unauthorized"))
+            {
+
+                return RedirectToAction("Login", "Usuarios");
+            }
+
+
             if (response.IsSuccessStatusCode)
             {
                 
@@ -109,12 +124,11 @@ namespace HotelesBeachProyecto.Controllers
         public async Task<IActionResult> Edit([Bind] Paquete pPaquete)
         {
 
-            //Se agrega el token para la transacción
+            //Se agregan el token en la transacción
+            client.DefaultRequestHeaders.Authorization = AutorizacionToken();
 
-            //client.DefaultRequestHeaders.Authorization = AutorizacionToken();
 
 
-        
             var modificar = client.PutAsJsonAsync<Paquete>("/Paquetes/Editar", pPaquete);
             await modificar; //Esperamos
 
@@ -146,49 +160,25 @@ namespace HotelesBeachProyecto.Controllers
 
         }
 
-        // GET: GestionarPaquetes/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var paquete = await _context.Paquetes
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (paquete == null)
-            {
-                return NotFound();
-            }
-
-            return View(paquete);
-        }
 
         // POST: GestionarPaquetes/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var paquete = await _context.Paquetes.FindAsync(id);
-            if (paquete != null)
-            {
-                _context.Paquetes.Remove(paquete);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
+            //Se agregan el token en la transacción
+            client.DefaultRequestHeaders.Authorization = AutorizacionToken();
 
             var paquete = new Paquete();
-
-
-
             //Se utiliza la  API web para buscar el libro que deseamos editar los datos
             HttpResponseMessage response = await client.GetAsync($"/Paquetes/Buscar?id={id}");
+           
+            if (response.StatusCode.ToString().Equals("Unauthorized"))
+            {
+
+                return RedirectToAction("Login", "Usuarios");
+            }
+           
 
             if (response.IsSuccessStatusCode)
             {
@@ -208,7 +198,7 @@ namespace HotelesBeachProyecto.Controllers
         {
 
             //Se agregan el token en la transacción
-            //client.DefaultRequestHeaders.Authorization = AutorizacionToken();
+            client.DefaultRequestHeaders.Authorization = AutorizacionToken();
 
      
             HttpResponseMessage response = await client.DeleteAsync($"/Paquetes/Eliminar?id={id}");
@@ -226,9 +216,22 @@ namespace HotelesBeachProyecto.Controllers
 
         }
 
-        private bool PaqueteExists(int id)
+        private AuthenticationHeaderValue AutorizacionToken()
         {
-            return _context.Paquetes.Any(e => e.Id == id);
+            //se extrae el token almacenado dentro de la sesión
+            var token = HttpContext.Session.GetString("token");
+
+            //Variable para almacenar el token de autenticación
+            AuthenticationHeaderValue authentication = null;
+
+            if (token != null && token.Length != 0)
+            {
+                //Se almacena el token  otorgado por la API
+                authentication = new AuthenticationHeaderValue("Bearer", token);
+            }
+
+            //se retorna la información
+            return authentication;
         }
     }
 }
