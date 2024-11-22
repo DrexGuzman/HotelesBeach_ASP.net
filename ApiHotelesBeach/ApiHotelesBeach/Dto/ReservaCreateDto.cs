@@ -1,16 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
-namespace ApiHotelesBeach.Models
+namespace ApiHotelesBeach.Dto
 {
-    public class FormaPago
+    public class ReservaCreateDto
     {
-        [Key]
-        [Required(ErrorMessage = "Este campo es obligatorio")]
-        public int Id { get; set; }
+        [Required]
+        [Range(1, 365)]
+        public int CantidadNoches { get; set; }
 
-        [Required(ErrorMessage = "Debe indicar el nombre de la forma de pago")]
+        [Required]
+        [Range(1, 8)]
+        public int CantidadPersonas { get; set; }
+
+        [Required]
+        public int PaqueteId { get; set; }
+
         [StringLength(100)]
-        public string Nombre { get; set; }
+        public string? NombreFormaPago { get; set; }
 
         //[Required(ErrorMessage = "Debe indicar el número de cheque o tarjeta")]
         public int? Numero { get; set; }
@@ -26,5 +33,8 @@ namespace ApiHotelesBeach.Models
 
         [StringLength(100)]
         public string? NombreTitular { get; set; }
+
+        [Required]
+        public string ClienteCedula { get; set; }
     }
 }

@@ -1,7 +1,11 @@
 ﻿using ApiHotelesBeach.Data;
 using ApiHotelesBeach.Dto;
 using ApiHotelesBeach.Models;
+using ApiHotelesBeach.Models.Custom;
+using ApiHotelesBeach.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 
@@ -12,12 +16,15 @@ namespace ApiHotelesBeach.Controllers
     public class UsuariosController : Controller
     {
         private readonly DbContextHotel _context = null;
+        private readonly IAutorizacionServices _autorizacionServices;
 
-        public UsuariosController(DbContextHotel pContext)
+        public UsuariosController(DbContextHotel pContext, IAutorizacionServices autorizacionServices)
         {
             _context = pContext;
+            _autorizacionServices = autorizacionServices;
         }
 
+        [Authorize]
         [HttpGet("Listado")]
         public List<Usuario> Listado()
         {
@@ -163,7 +170,7 @@ namespace ApiHotelesBeach.Controllers
             return (null, null);
         }
 
-
+        [Authorize]
         [HttpGet("Buscar/{cedula}")]
         public IActionResult Buscar(string cedula)
         {
@@ -177,46 +184,34 @@ namespace ApiHotelesBeach.Controllers
             return Ok(usuario);
         }
 
+        [Authorize]
         [HttpPut("Actualizar/{cedula}")]
-        public async Task<IActionResult> Actualizar(string cedula, [FromBody] UsuarioDto usuarioDto, string confirmar)
+        public async Task<IActionResult> Actualizar(string cedula, [FromBody] UsuarioEditarDto usuarioDto)
         {
             if (usuarioDto == null)
             {
                 return BadRequest("Debe ingresar la información completa del usuario");
             }
 
+            // Buscar al usuario por la cédula proporcionada
             var usuario = _context.Usuarios.FirstOrDefault(x => x.Cedula == cedula);
             if (usuario == null)
             {
                 return NotFound($"Usuario con cédula {cedula} no encontrado.");
             }
 
-            // Verificar si la cédula es única
-            var existentUserByCedula = _context.Usuarios.FirstOrDefault(x => x.Cedula == usuarioDto.Cedula && x.Cedula != cedula);
-            if (existentUserByCedula != null)
-            {
-                return Conflict("Ya existe un usuario asociado a la cédula ingresada.");
-            }
-
             // Verificar si el correo electrónico es único
-            var existentUserByEmail = _context.Usuarios.FirstOrDefault(x => x.Email == usuarioDto.Email && x.Email != usuario.Email);
+            var existentUserByEmail = _context.Usuarios.FirstOrDefault(x => x.Email == usuarioDto.Email && x.Cedula != cedula);
             if (existentUserByEmail != null)
             {
                 return Conflict("Ya existe un usuario asociado al correo electrónico ingresado.");
-            }
-
-
-            // Validación de contraseña
-            if (!usuarioDto.Password.Equals(confirmar))
-            {
-                return BadRequest("La confirmación de la contraseña ha fallado.");
             }
 
             // Actualizar los campos del usuario
             usuario.Telefono = usuarioDto.Telefono;
             usuario.Direccion = usuarioDto.Direccion;
             usuario.Email = usuarioDto.Email;
-            usuario.Password = usuarioDto.Password;
+            usuario.IsAdmin = usuarioDto.IsAdmin;
 
             string mensaje = ValidarPassword(usuario.Password, usuario.NombreCompleto);
             if (!string.IsNullOrEmpty(mensaje))
@@ -236,6 +231,7 @@ namespace ApiHotelesBeach.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete("Eliminar/{cedula}")]
         public async Task<IActionResult> Eliminar(string cedula)
         {
@@ -257,6 +253,27 @@ namespace ApiHotelesBeach.Controllers
             }
         }
 
-
+        [HttpPost]
+        [Route("Login")]
+        public async Task<IActionResult> Login(string email, string password)
+        {
+            var temp = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email.Equals(email) && u.Password.Equals(password));
+            if (temp == null)
+            {
+                return Unauthorized(new AutorizacionResponse() { Token = "", Msj = "No autorizado", Resultado = false });
+            }
+            else
+            {
+                var autorizado = await _autorizacionServices.DevolverToken(temp);
+                if (autorizado == null)
+                {
+                    return Unauthorized(new AutorizacionResponse() { Token = "", Msj = "No autorizado", Resultado = false });
+                }
+                else
+                {
+                    return Ok(autorizado);
+                }
+            }
+        }
     }
 }

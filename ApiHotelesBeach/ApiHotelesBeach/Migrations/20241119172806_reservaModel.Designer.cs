@@ -4,6 +4,7 @@ using ApiHotelesBeach.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiHotelesBeach.Migrations
 {
     [DbContext(typeof(DbContextHotel))]
-    partial class DbContextHotelModelSnapshot : ModelSnapshot
+    [Migration("20241119172806_reservaModel")]
+    partial class reservaModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,7 +52,7 @@ namespace ApiHotelesBeach.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("Numero")
+                    b.Property<int>("Numero")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -60,7 +63,8 @@ namespace ApiHotelesBeach.Migrations
                         new
                         {
                             Id = 1,
-                            Nombre = "Efectivo"
+                            Nombre = "Efectivo",
+                            Numero = 0
                         },
                         new
                         {
@@ -126,9 +130,6 @@ namespace ApiHotelesBeach.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("MontoFinal")
-                        .HasColumnType("decimal(18, 4)");
-
-                    b.Property<decimal>("MontoFinalColones")
                         .HasColumnType("decimal(18, 4)");
 
                     b.Property<decimal>("MontoRebajado")
@@ -205,7 +206,7 @@ namespace ApiHotelesBeach.Migrations
                             Cedula = "604880492",
                             Direccion = "Esparza Centro",
                             Email = "ashleycr33@gmail.com",
-                            FechaRegistro = new DateTime(2024, 11, 19, 16, 19, 27, 770, DateTimeKind.Local).AddTicks(8354),
+                            FechaRegistro = new DateTime(2024, 11, 19, 11, 28, 6, 256, DateTimeKind.Local).AddTicks(8498),
                             IsAdmin = true,
                             NombreCompleto = "Ashley Rojas Pérez",
                             Password = "ashley12345",

@@ -7,7 +7,11 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HotelesBeachProyecto.styles.css" asp-append-version="true" />
+
+    
 </head>
+
+
 <body>
     <div class="d-block">
         <img src="@Url.Content("~/css/fondo.png")" class="position-absolute order-1" alt="fondo" />
@@ -22,7 +26,7 @@
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                        <ul class="navbar-nav flex-grow-1">
+                        <ul class="navbar-nav flex-grow-1 ">
                             <li class="nav-item mx-2">
                                 <a class="nav-link fw-bold text-white" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
                             </li>
@@ -34,9 +38,65 @@
                                 <a class="nav-link fw-bold text-white" asp-area="" asp-controller="Paquetes" asp-action="Index">Paquetes</a>
                             </li>
 
-                            <li class="nav-item mx-2">
-                                <a class="nav-link fw-bold text-white" asp-area="" asp-controller="Usuarios" asp-action="Login">Iniciar Sesion</a>
-                            </li>
+
+                            
+                           
+
+                            <ul class="navbar-nav">
+                                @if (User.Identity.IsAuthenticated)
+
+                                {
+                                    <div class="dropdown justify-content-center align-content-center">
+                                        <button class="shadow-none btn dropdown-toggle fw-bold text-white border-0" type="button" id="dropdownMenuButton" aria-expanded="false">
+                                            Panel administrador
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <li>
+                                                <a class="dropdown-item text-black" asp-controller="GestionarPaquetes" asp-action="Index">Gestionar paquetes</a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item text-black" asp-controller="GestionarUsuarios" asp-action="Index">Gestionar usuarios</a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item text-black" href="/Home/GestionarReservas">Gestionar reservas</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <style>
+                                        /* Desplegar el menú al hacer hover sobre el botón */
+                                        .dropdown:hover .dropdown-menu {
+                                            display: block;
+                                        }
+
+                                        /* Asegurarse de que el menú se oculte si no está en hover */
+                                        .dropdown-menu {
+                                            display: none;
+                                        }
+                                    </style>
+
+
+                                    <div class="dropdown  justify-content-center align-content-center">
+                                        <button class="btn shadow-none   dropdown-toggle fw-bold text-white" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Hola @User.Identity.Name
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <li class="nav-item">
+                                                <a class="dropdown-item text-black" asp-area="" asp-controller="Usuarios" asp-action="Logout">Cerrar sesión</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                           
+                                }
+                                else
+                                {
+                                    <li class="nav-item mx-2">
+                                        <a class="nav-link fw-bold text-white" asp-area="" asp-controller="Usuarios" asp-action="Login">Iniciar Sesion</a>
+                                    </li>
+                                }
+                            </ul>
+
                         </ul>
                     </div>
                 </div>

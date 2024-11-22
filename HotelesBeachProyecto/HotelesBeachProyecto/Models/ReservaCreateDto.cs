@@ -14,18 +14,6 @@ namespace HotelesBeachProyecto.Models
         public int CantidadPersonas { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(18, 4)")]
-        public decimal Descuento { get; set; }
-
-        [Required]
-        [Column(TypeName = "decimal(18, 4)")]
-        public decimal MontoRebajado { get; set; }
-
-        [Required]
-        [Column(TypeName = "decimal(18, 4)")]
-        public decimal MontoFinal { get; set; }
-
-        [Required]
         public int PaqueteId { get; set; }
 
         [Required]

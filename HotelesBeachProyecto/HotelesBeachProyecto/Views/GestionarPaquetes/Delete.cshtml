@@ -1,0 +1,45 @@
+﻿@model HotelesBeachProyecto.Models.Paquete
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<div class="d-flex flex-column align-items-center">
+    <div class=" w-25 shadow p-4">
+        <h4 class="card-title mb-3">¿Estás seguro de que deseas eliminar este paquete?</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-4 fw-bold">
+                @Html.DisplayNameFor(model => model.Nombre)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Nombre)
+            </dd>
+            <dt class="col-sm-4 fw-bold">
+                @Html.DisplayNameFor(model => model.Costo)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Costo)
+            </dd>
+            <dt class="col-sm-4 fw-bold">
+                @Html.DisplayNameFor(model => model.Prima)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Prima)
+            </dd>
+            <dt class="col-sm-4 fw-bold">
+                @Html.DisplayNameFor(model => model.Mensualidades)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Mensualidades)
+            </dd>
+        </dl>
+        <div class="text-center">
+            <form asp-action="DeletePaqute" class="d-inline">
+                <input type="hidden" asp-for="Id" />
+                <input type="submit" value="Eliminar" class="btn btn-danger me-2" />
+            </form>
+            <a asp-action="Index" class="btn btn-secondary">Volver a la Lista</a>
+        </div>
+    </div>
+</div>

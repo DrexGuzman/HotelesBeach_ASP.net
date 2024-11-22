@@ -1,0 +1,100 @@
+﻿@model IEnumerable<HotelesBeachProyecto.Models.Usuario>
+
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<div class="container">
+    <div class="d-flex flex-column align-items-start mb-3">
+        <h1 class="mb-0">Usuarios</h1>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Tipo de </th>
+                    <th>Nombre</th>
+                    <th>@Html.DisplayNameFor(model => model.Telefono)</th>
+                    <th>@Html.DisplayNameFor(model => model.Direccion)</th>
+                    <th>@Html.DisplayNameFor(model => model.Email)</th>
+                    <th>Fecha de registro</th>
+                    <th>Permisos</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var modalId = $"modal-{item.Cedula}";
+                    var isAdmin = !item.IsAdmin;
+                    <!-- ID único del modal -->
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.TipoCedula)</td>
+                        <td>@Html.DisplayFor(modelItem => item.NombreCompleto)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Telefono)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Direccion)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                        <td>@Html.DisplayFor(modelItem => item.FechaRegistro)</td>
+
+                        <td>
+                            <select class="form-select" onchange="openModal('@modalId')">
+                                @if (item.IsAdmin)
+                                {
+                                    <option value="Administrador" selected>Administrador</option>
+                                    <option value="Usuario">Usuario</option>
+                                }
+                                else
+                                {
+                                    <option value="Usuario" selected>Usuario</option>
+                                    <option value="Administrador">Administrador</option>
+                                }
+                            </select>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="@modalId" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Cambiar tipo de usuario</h5>
+                     
+                                        </div>
+                                        <div class="modal-body">
+                                            ¿Estás seguro que deseas darle permisos de
+                                            <span>@(item.IsAdmin ? "Usuario" : "Administrador")</span>
+                                            a @item.NombreCompleto? @isAdmin
+                                        </div>
+                                        <div class="modal-footer">
+                                            <form asp-controller="GestionarUsuarios" asp-action="Edit" method="POST">
+                               
+                                                <input type="hidden" name="cedula" value=0 />
+                                   
+                                                <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                            </form>
+                                            <form asp-controller="GestionarUsuarios" asp-action="Edit" method="POST">
+                                                <input type="text" name="IsAdmin" value="@(item.IsAdmin ? "false" : "true")" />
+                                                <input type="hidden" name="Direccion" value="@item.Direccion" />
+                                                <input type="hidden" name="Telefono" value="@item.Telefono" />
+                                                <input type="hidden" name="Email" value="@item.Email" />
+                                                <input type="hidden" name="cedula" value="@item.Cedula" />
+                                                <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function openModal(modalId) {
+        var myModal = new bootstrap.Modal(document.getElementById(modalId));
+        myModal.show();
+    }
+</script>
