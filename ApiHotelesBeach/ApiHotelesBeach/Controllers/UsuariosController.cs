@@ -24,7 +24,7 @@ namespace ApiHotelesBeach.Controllers
             _autorizacionServices = autorizacionServices;
         }
 
-       
+        [Authorize]
         [HttpGet("Listado")]
         public List<Usuario> Listado()
         {
