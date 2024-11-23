@@ -29,11 +29,7 @@ namespace HotelesBeachProyecto.Controllers
 
             HttpResponseMessage response = await client.GetAsync("/Usuarios/Listado");
 
-            if (response.StatusCode.ToString().Equals("Unauthorized"))
-            {
-
-                return RedirectToAction("Login", "Usuarios");
-            }
+           
 
             if (response.IsSuccessStatusCode)
             {

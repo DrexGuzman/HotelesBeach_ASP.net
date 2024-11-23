@@ -13,7 +13,7 @@ namespace HotelesBeachProyecto.Models
         public string Nombre { get; set; }
 
         //[Required(ErrorMessage = "Debe indicar el número de cheque o tarjeta")]
-        public int Numero { get; set; }
+        public int? Numero { get; set; }
 
         [StringLength(100)]
         public string? Banco { get; set; }

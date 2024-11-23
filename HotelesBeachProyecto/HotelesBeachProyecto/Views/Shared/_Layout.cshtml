@@ -58,18 +58,18 @@
                                                 <a class="dropdown-item text-black" asp-controller="GestionarUsuarios" asp-action="Index">Gestionar usuarios</a>
                                             </li>
                                             <li>
-                                                <a class="dropdown-item text-black" href="/Home/GestionarReservas">Gestionar reservas</a>
+                                                <a class="dropdown-item text-black" asp-controller="GestionarReservas" asp-action="Index">Gestionar reservas</a>
                                             </li>
                                         </ul>
                                     </div>
 
                                     <style>
-                                        /* Desplegar el menú al hacer hover sobre el botón */
+                                     
                                         .dropdown:hover .dropdown-menu {
                                             display: block;
                                         }
 
-                                        /* Asegurarse de que el menú se oculte si no está en hover */
+                                      
                                         .dropdown-menu {
                                             display: none;
                                         }

@@ -13,7 +13,8 @@
         <table class="table table-striped table-bordered text-center">
             <thead class="table-dark">
                 <tr>
-                    <th>Tipo de </th>
+                    <th>Tipo de cedula</th>
+                    <th>Cedula</th>
                     <th>Nombre</th>
                     <th>@Html.DisplayNameFor(model => model.Telefono)</th>
                     <th>@Html.DisplayNameFor(model => model.Direccion)</th>
@@ -26,10 +27,11 @@
                 @foreach (var item in Model)
                 {
                     var modalId = $"modal-{item.Cedula}";
-                    var isAdmin = !item.IsAdmin;
+             
                     <!-- ID único del modal -->
                     <tr>
                         <td>@Html.DisplayFor(modelItem => item.TipoCedula)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Cedula)</td>
                         <td>@Html.DisplayFor(modelItem => item.NombreCompleto)</td>
                         <td>@Html.DisplayFor(modelItem => item.Telefono)</td>
                         <td>@Html.DisplayFor(modelItem => item.Direccion)</td>
@@ -61,7 +63,7 @@
                                         <div class="modal-body">
                                             ¿Estás seguro que deseas darle permisos de
                                             <span>@(item.IsAdmin ? "Usuario" : "Administrador")</span>
-                                            a @item.NombreCompleto? @isAdmin
+                                            a @item.NombreCompleto?
                                         </div>
                                         <div class="modal-footer">
                                             <form asp-controller="GestionarUsuarios" asp-action="Edit" method="POST">
