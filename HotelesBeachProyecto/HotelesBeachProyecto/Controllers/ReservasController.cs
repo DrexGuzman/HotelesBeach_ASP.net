@@ -4,6 +4,8 @@ using HotelesBeachProyecto.Data; // Reemplaza con tu contexto de base de datos
 using HotelesBeachProyecto.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using System.Net.Http.Json;
+using System.Net.Http.Headers;
 
 namespace HotelesBeachProyecto.Controllers
 {
@@ -22,7 +24,8 @@ namespace HotelesBeachProyecto.Controllers
         // GET: Reservas
         public async Task<IActionResult> Index()
         {
-            List<Reserva> reservas = new List<Reserva>();
+
+            List<Paquete> paquetes = new List<Paquete>();
 
             //se utiliza el metodo de la api
             HttpResponseMessage response = await client.GetAsync("/Paquetes/Listado");
@@ -31,161 +34,87 @@ namespace HotelesBeachProyecto.Controllers
             {
                 var resultado = response.Content.ReadAsStringAsync().Result;
 
-                reservas = JsonConvert.DeserializeObject<List<Reserva>>(resultado);
+                paquetes = JsonConvert.DeserializeObject<List<Paquete>>(resultado);
             }
 
-            return View(reservas);
+            return View(paquetes);
+
         }
 
-        // GET: Reservas/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            //if (id == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //var reserva = await _context.Reservas
-            //    .Include(r => r.Paquete)
-            //    .Include(r => r.FormaPago)
-            //    .Include(r => r.Usuario)
-            //    .FirstOrDefaultAsync(m => m.Id == id);
-
-            //if (reserva == null)
-            //{
-            //    return NotFound();
-            //}
-
-            return View();
-        }
 
         // GET: Reservas/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            
-            return View();
+            List<Paquete> paquetes = new List<Paquete>();
+
+            // Llamar al método de la API
+            HttpResponseMessage response = await client.GetAsync("/Paquetes/Listado");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var resultado = await response.Content.ReadAsStringAsync();
+                paquetes = JsonConvert.DeserializeObject<List<Paquete>>(resultado);
+            }
+
+            var viewModel = new ReservaViewModel
+            {
+                reserva = new ReservaCreateDto(), // Inicializa un objeto Reserva vacío
+                paquete = paquetes
+            };
+
+            return View(viewModel);
         }
 
         // POST: Reservas/Create
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        // public async Task<IActionResult> Create([Bind("Id,CantidadNoches,CantidadPersonas,Descuento,MontoRebajado,MontoFinal,PaqueteId,FormaPagoId,ClienteCedula")] Reserva reserva)
+        // {
+        //     if (ModelState.IsValid)
+        //     {
+        //         // Calcula los montos automáticamente
+        //         reserva.MontoRebajado = CalculaMontoRebajado(reserva.CantidadNoches, reserva.PaqueteId, reserva.Descuento);
+        //         reserva.MontoFinal = CalculaMontoFinal(reserva.MontoRebajado, reserva.Descuento);
+
+        //         _context.Add(reserva);
+        //         await _context.SaveChangesAsync();
+        //         return RedirectToAction(nameof(Index));
+        //     }
+
+        //     ViewData["PaqueteId"] = new SelectList(_context.Paquetes, "Id", "Nombre", reserva.PaqueteId);
+        //     ViewData["FormaPagoId"] = new SelectList(_context.FormasPago, "Id", "Nombre", reserva.FormaPagoId);
+        //     return View(reserva);
+        // }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CantidadNoches,CantidadPersonas,Descuento,MontoRebajado,MontoFinal,PaqueteId,FormaPagoId,ClienteCedula")] Reserva reserva)
+        public async Task<IActionResult> Create([Bind] ReservaViewModel viewModel)
         {
-            //if (ModelState.IsValid)
-            //{
-            //    // Calcula los montos automáticamente
-            //    reserva.MontoRebajado = CalculaMontoRebajado(reserva.CantidadNoches, reserva.PaqueteId, reserva.Descuento);
-            //    reserva.MontoFinal = CalculaMontoFinal(reserva.MontoRebajado, reserva.Descuento);
+            ReservaCreateDto reserva = new ReservaCreateDto();
+            reserva = viewModel.reserva;
 
-            //    _context.Add(reserva);
-            //    await _context.SaveChangesAsync();
-            //    return RedirectToAction(nameof(Index));
-            //}
 
-            //ViewData["PaqueteId"] = new SelectList(_context.Paquetes, "Id", "Nombre", reserva.PaqueteId);
-            //ViewData["FormaPagoId"] = new SelectList(_context.FormasPago, "Id", "Nombre", reserva.FormaPagoId);
-            return View(reserva);
-        }
+            client.DefaultRequestHeaders.Authorization = AutorizacionToken();
 
-        // GET: Reservas/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            //if (id == null)
-            //{
-            //    return NotFound();
-            //}
+            var agregar = client.PostAsJsonAsync<ReservaCreateDto>("/Reservas/Agregar", reserva);
+            await agregar;
 
-            //var reserva = await _context.Reservas.FindAsync(id);
-            //if (reserva == null)
-            //{
-            //    return NotFound();
-            //}
+            var resultado = agregar.Result;
 
-            //ViewData["PaqueteId"] = new SelectList(_context.Paquetes, "Id", "Nombre", reserva.PaqueteId);
-            //ViewData["FormaPagoId"] = new SelectList(_context.FormasPago, "Id", "Nombre", reserva.FormaPagoId);
-            return View();
-        }
+            if (resultado.StatusCode.ToString().Equals("Unauthorized"))
+            {
 
-        // POST: Reservas/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CantidadNoches,CantidadPersonas,Descuento,MontoRebajado,MontoFinal,PaqueteId,FormaPagoId,ClienteCedula")] Reserva reserva)
-        {
-            //if (id != reserva.Id)
-            //{
-            //    return NotFound();
-            //}
+                return RedirectToAction("Login", "Usuarios");
+            }
 
-            //if (ModelState.IsValid)
-            //{
-            //    try
-            //    {
-            //        reserva.MontoRebajado = CalculaMontoRebajado(reserva.CantidadNoches, reserva.PaqueteId, reserva.Descuento);
-            //        reserva.MontoFinal = CalculaMontoFinal(reserva.MontoRebajado, reserva.Descuento);
-
-            //        _context.Update(reserva);
-            //        await _context.SaveChangesAsync();
-            //    }
-            //    catch (DbUpdateConcurrencyException)
-            //    {
-            //        if (!ReservaExists(reserva.Id))
-            //        {
-            //            return NotFound();
-            //        }
-            //        else
-            //        {
-            //            throw;
-            //        }
-            //    }
-            //    return RedirectToAction(nameof(Index));
-            //}
-
-            //ViewData["PaqueteId"] = new SelectList(_context.Paquetes, "Id", "Nombre", reserva.PaqueteId);
-            //ViewData["FormaPagoId"] = new SelectList(_context.FormasPago, "Id", "Nombre", reserva.FormaPagoId);
-            return View(reserva);
-        }
-
-        // GET: Reservas/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            //if (id == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //var reserva = await _context.Reservas
-            //    .Include(r => r.Paquete)
-            //    .Include(r => r.FormaPago)
-            //    .Include(r => r.Usuario)
-            //    .FirstOrDefaultAsync(m => m.Id == id);
-
-            //if (reserva == null)
-            //{
-            //    return NotFound();
-            //}
-
-            return View();
-        }
-
-        // POST: Reservas/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            //var reserva = await _context.Reservas.FindAsync(id);
-            //if (reserva != null)
-            //{
-            //    _context.Reservas.Remove(reserva);
-            //    await _context.SaveChangesAsync();
-            //}
-
-            return RedirectToAction("Index");
-        }
-
-        // Métodos Auxiliares
-        private bool ReservaExists(int id)
-        {
-            return true;
+            if (resultado.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index","Home");
+            }
+            else
+            {
+                return View(viewModel.reserva);
+            }
         }
 
         private decimal CalculaMontoRebajado(int cantidadNoches, int paqueteId, decimal descuento)
@@ -200,6 +129,24 @@ namespace HotelesBeachProyecto.Controllers
         {
             // Implementa lógica adicional si es necesario
             return montoRebajado;
+        }
+
+        private AuthenticationHeaderValue AutorizacionToken()
+        {
+            //se extrae el token almacenado dentro de la sesión
+            var token = HttpContext.Session.GetString("token");
+
+            //Variable para almacenar el token de autenticación
+            AuthenticationHeaderValue authentication = null;
+
+            if (token != null && token.Length != 0)
+            {
+                //Se almacena el token  otorgado por la API
+                authentication = new AuthenticationHeaderValue("Bearer", token);
+            }
+
+            //se retorna la información
+            return authentication;
         }
     }
 }

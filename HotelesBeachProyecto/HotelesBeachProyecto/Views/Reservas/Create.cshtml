@@ -1,4 +1,4 @@
-﻿@model HotelesBeachProyecto.Models.Reserva
+﻿@model HotelesBeachProyecto.Models.ReservaViewModel
 @{
     ViewData["Title"] = "Create";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -6,8 +6,7 @@
 
 <div class="container">
     
-
-    <form asp-action="CrearReserva" method="post" class="bg-white mb-3 px-5">
+    <form asp-action="Create" method="post" class="bg-white mb-3 px-5">
 
         <h4 class="text-center p-2 text-black">Nueva Reservación</h4>
 
@@ -17,14 +16,12 @@
 
             <div class="row mb-3 px-4">
                 <div class="col-md-6">
-                    <label asp-for="ClienteCedula" class="form-label">Cédula del cliente</label>
-                    <input asp-for="ClienteCedula" class="form-control" placeholder="Ingrese la cédula del cliente" />
-                    <span asp-validation-for="ClienteCedula" class="text-danger"></span>
+                    <label asp-for="reserva.ClienteCedula" class="form-label">Cédula del cliente</label>
+                    <input asp-for="reserva.ClienteCedula" type="text" class="form-control" placeholder="Ingrese la cédula del cliente" />
+                    <span asp-validation-for="reserva.ClienteCedula" class="text-danger"></span>
                 </div>
                 <div class="col-md-6 d-flex align-items-end">
-                    <button type="button" class="btn btn-outline-primary w-100 mt-1">
-                        <i class="bi bi-search"></i> Buscar cliente
-                    </button>
+                    
                 </div>
             </div>
         </fieldset>
@@ -35,47 +32,44 @@
 
             <div class="row mb-3 px-4">
                 <div class="col-md-6">
-                    <label asp-for="PaqueteId" class="form-label">Paquete</label>
-                    <select asp-for="PaqueteId" class="form-select">
+                    <label asp-for="reserva.PaqueteId" class="form-label">Paquete</label>
+                    <select asp-for="reserva.PaqueteId" class="form-select">
                         <option value="">Seleccione un paquete</option>
-                        <!-- Ejemplo de opciones dinámicas -->
-                        <option value="1">Paquete Básico</option>
-                        <option value="2">Paquete Premium</option>
+                        @foreach (var paquete in Model.paquete)
+                        {
+                            <option value="@paquete.Id">@paquete.Nombre</option>
+                        }
                     </select>
-                    <span asp-validation-for="PaqueteId" class="text-danger"></span>
+                    <span asp-validation-for="reserva.PaqueteId" class="text-danger"></span>
                 </div>
                 <div class="col-md-6">
-                    <label asp-for="FormaPagoId" class="form-label">Forma de pago</label>
-                    <select asp-for="FormaPagoId" class="form-select">
+                    <label asp-for="reserva.NombreFormaPago" class="form-label">Forma de pago</label>
+                    <select asp-for="reserva.NombreFormaPago" class="form-select">
                         <option value="">Seleccione una forma de pago</option>
                         <!-- Ejemplo de opciones dinámicas -->
                         <option value="1">Tarjeta de crédito</option>
                         <option value="2">Transferencia bancaria</option>
                     </select>
-                    <span asp-validation-for="FormaPagoId" class="text-danger"></span>
+                    <span asp-validation-for="reserva.NombreFormaPago" class="text-danger"></span>
                 </div>
             </div>
 
             <div class="row mb-3 px-4">
                 <div class="col-md-4">
-                    <label asp-for="CantidadNoches" class="form-label">Cantidad de noches</label>
-                    <input asp-for="CantidadNoches" class="form-control" type="number" min="1" max="365" />
-                    <span asp-validation-for="CantidadNoches" class="text-danger"></span>
+                    <label asp-for="reserva.CantidadNoches" class="form-label">Cantidad de noches</label>
+                    <input asp-for="reserva.CantidadNoches" class="form-control" type="number" min="1" max="365" />
+                    <span asp-validation-for="reserva.CantidadNoches" class="text-danger"></span>
                 </div>
                 <div class="col-md-4">
-                    <label asp-for="CantidadPersonas" class="form-label">Cantidad de personas</label>
-                    <input asp-for="CantidadPersonas" class="form-control" type="number" min="1" max="8" />
-                    <span asp-validation-for="CantidadPersonas" class="text-danger"></span>
+                    <label asp-for="reserva.CantidadPersonas" class="form-label">Cantidad de personas</label>
+                    <input asp-for="reserva.CantidadPersonas" class="form-control" type="number" min="1" max="8" />
+                    <span asp-validation-for="reserva.CantidadPersonas" class="text-danger"></span>
                 </div>
-                <div class="col-md-4">
-                    <label asp-for="Descuento" class="form-label">Descuento (%)</label>
-                    <input asp-for="Descuento" class="form-control" type="number" min="0" step="0.01" />
-                    <span asp-validation-for="Descuento" class="text-danger"></span>
-                </div>
+                
             </div>
         </fieldset>
 
-        <!-- Información de Montos -->
+        @* <!-- Información de Montos -->
         <fieldset class="border p-4 mb-4">
             <legend class="w-auto px-3 text-black">Montos de la reservación</legend>
 
@@ -96,7 +90,7 @@
                     </button>
                 </div>
             </div>
-        </fieldset>
+        </fieldset> *@
 
         <!-- Botón de envío -->
         <div class="text-center">

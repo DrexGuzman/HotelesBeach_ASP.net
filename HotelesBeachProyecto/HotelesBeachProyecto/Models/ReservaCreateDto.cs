@@ -17,7 +17,7 @@ namespace HotelesBeachProyecto.Models
         public int PaqueteId { get; set; }
 
         [Required]
-        public int FormaPagoId { get; set; }
+        public string NombreFormaPago { get; set; }
 
         [Required]
         public string ClienteCedula { get; set; }

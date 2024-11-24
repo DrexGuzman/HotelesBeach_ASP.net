@@ -28,7 +28,7 @@ namespace ApiHotelesBeach.Controllers
             _logger = logger;
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet("Listado")]
         public List<Reserva> Listado()
         {
