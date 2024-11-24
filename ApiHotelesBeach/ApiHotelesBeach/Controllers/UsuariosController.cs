@@ -260,20 +260,44 @@ namespace ApiHotelesBeach.Controllers
             var temp = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email.Equals(email) && u.Password.Equals(password));
             if (temp == null)
             {
-                return Unauthorized(new AutorizacionResponse() { Token = "", Msj = "No autorizado", Resultado = false });
+                return Unauthorized(new AutorizacionResponse()
+                {
+                    Token = "",
+                    Msj = "No autorizado",
+                    Resultado = false
+                });
             }
-            else
+
+            var token = await _autorizacionServices.DevolverToken(temp);
+            if (token == null)
             {
-                var autorizado = await _autorizacionServices.DevolverToken(temp);
-                if (autorizado == null)
+                return Unauthorized(new AutorizacionResponse()
                 {
-                    return Unauthorized(new AutorizacionResponse() { Token = "", Msj = "No autorizado", Resultado = false });
-                }
-                else
-                {
-                    return Ok(autorizado);
-                }
+                    Token = "",
+                    Msj = "No autorizado",
+                    Resultado = false
+                });
             }
+
+            // Crear una respuesta que incluya el token y el usuario
+            var loginResponse = new
+            {
+                Token = token.Token,
+                Usuario = new
+                {
+                    temp.Cedula,
+                    temp.NombreCompleto,
+                    temp.Email,
+                    temp.Telefono,
+                    temp.Direccion,
+                    temp.IsAdmin
+                },
+                Msj = "Inicio de sesión exitoso",
+                Resultado = true
+            };
+
+            return Ok(loginResponse);
         }
+
     }
 }
