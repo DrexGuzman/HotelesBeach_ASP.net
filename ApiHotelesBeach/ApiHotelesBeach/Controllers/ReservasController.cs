@@ -28,7 +28,7 @@ namespace ApiHotelesBeach.Controllers
             _logger = logger;
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpGet("Listado")]
         public List<Reserva> Listado()
         {
@@ -55,7 +55,7 @@ namespace ApiHotelesBeach.Controllers
             }
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPost("Agregar")]
         public async Task<IActionResult> Agregar([FromBody] ReservaCreateDto reservaDto)
         {
