@@ -5,7 +5,7 @@
 }
 
 <div class="container">
-    
+
     <form asp-action="Create" method="post" class="bg-white mb-3 px-5">
 
         <h4 class="text-center p-2 text-black">Nueva Reservación</h4>
@@ -21,7 +21,7 @@
                     <span asp-validation-for="reserva.ClienteCedula" class="text-danger"></span>
                 </div>
                 <div class="col-md-6 d-flex align-items-end">
-                    
+                    <!-- Campo vacío -->
                 </div>
             </div>
         </fieldset>
@@ -44,13 +44,48 @@
                 </div>
                 <div class="col-md-6">
                     <label asp-for="reserva.NombreFormaPago" class="form-label">Forma de pago</label>
-                    <select asp-for="reserva.NombreFormaPago" class="form-select">
+                    <select id="formaPago" asp-for="reserva.NombreFormaPago" class="form-select" onchange="togglePaymentFields()">
                         <option value="">Seleccione una forma de pago</option>
-                        <!-- Ejemplo de opciones dinámicas -->
-                        <option value="1">Tarjeta de crédito</option>
-                        <option value="2">Transferencia bancaria</option>
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Cheque">Cheque</option>
+                        <option value="Tarjeta">Tarjeta de crédito</option>
                     </select>
                     <span asp-validation-for="reserva.NombreFormaPago" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- Campos dinámicos para forma de pago -->
+            <div class="row mb-3 px-4" id="dynamicFields">
+                <!-- Campos para Cheque -->
+                <div id="chequeFields" style="display: none;">
+                    <div class="col-md-6">
+                        <label class="form-label">Número de cheque</label>
+                        <input id="chequeNumero" type="text" class="form-control" placeholder="Ingrese el número del cheque" />
+                    </div>
+                </div>
+
+                <!-- Campos para Tarjeta -->
+                <div id="tarjetaFields" style="display: none;">
+                    <div class="col-md-6">
+                        <label class="form-label">Número de tarjeta</label>
+                        <input id="tarjetaNumero" type="text" class="form-control" placeholder="Ingrese el número de tarjeta" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Banco</label>
+                        <input id="tarjetaBanco" type="text" class="form-control" placeholder="Ingrese el banco" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">CVV</label>
+                        <input id="tarjetaCVV" type="text" class="form-control" placeholder="Ingrese el CVV" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha de expiración</label>
+                        <input id="tarjetaExpiracion" type="text" class="form-control" placeholder="MM/AA" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre del titular</label>
+                        <input id="tarjetaTitular" type="text" class="form-control" placeholder="Ingrese el nombre del titular" />
+                    </div>
                 </div>
             </div>
 
@@ -65,32 +100,8 @@
                     <input asp-for="reserva.CantidadPersonas" class="form-control" type="number" min="1" max="8" />
                     <span asp-validation-for="reserva.CantidadPersonas" class="text-danger"></span>
                 </div>
-                
             </div>
         </fieldset>
-
-        @* <!-- Información de Montos -->
-        <fieldset class="border p-4 mb-4">
-            <legend class="w-auto px-3 text-black">Montos de la reservación</legend>
-
-            <div class="row mb-3 px-4">
-                <div class="col-md-4">
-                    <label asp-for="MontoRebajado" class="form-label">Monto rebajado</label>
-                    <input asp-for="MontoRebajado" class="form-control" type="number" readonly />
-                    <span asp-validation-for="MontoRebajado" class="text-danger"></span>
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="MontoFinal" class="form-label">Monto final</label>
-                    <input asp-for="MontoFinal" class="form-control" type="number" readonly />
-                    <span asp-validation-for="MontoFinal" class="text-danger"></span>
-                </div>
-                <div class="col-md-4 d-flex align-items-end">
-                    <button type="button" class="btn btn-outline-secondary w-100">
-                        <i class="bi bi-calculator"></i> Calcular montos
-                    </button>
-                </div>
-            </div>
-        </fieldset> *@
 
         <!-- Botón de envío -->
         <div class="text-center">
@@ -105,5 +116,23 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
-}
 
+    <script>
+        function togglePaymentFields() {
+            const formaPago = document.getElementById("formaPago").value;
+            const chequeFields = document.getElementById("chequeFields");
+            const tarjetaFields = document.getElementById("tarjetaFields");
+
+            // Reset visibility
+            chequeFields.style.display = "none";
+            tarjetaFields.style.display = "none";
+
+            // Show fields based on selection
+            if (formaPago === "Cheque") {
+                chequeFields.style.display = "block";
+            } else if (formaPago === "Tarjeta") {
+                tarjetaFields.style.display = "block";
+            }
+        }
+    </script>
+}
