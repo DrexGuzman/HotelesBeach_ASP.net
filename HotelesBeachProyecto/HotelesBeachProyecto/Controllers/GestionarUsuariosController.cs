@@ -26,7 +26,7 @@ namespace HotelesBeachProyecto.Controllers
 
             List<Usuario> usuarios = new List<Usuario>();
             //se utiliza el metodo de la api
-
+            client.DefaultRequestHeaders.Authorization = AutorizacionToken();
             HttpResponseMessage response = await client.GetAsync("/Usuarios/Listado");
 
            

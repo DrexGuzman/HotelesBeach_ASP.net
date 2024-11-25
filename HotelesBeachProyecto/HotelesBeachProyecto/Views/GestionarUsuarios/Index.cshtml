@@ -73,7 +73,7 @@
                                                 <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                                             </form>
                                             <form asp-controller="GestionarUsuarios" asp-action="Edit" method="POST">
-                                                <input type="text" name="IsAdmin" value="@(item.IsAdmin ? "false" : "true")" />
+                                                <input type="hidden" name="IsAdmin" value="@(item.IsAdmin ? "false" : "true")" />
                                                 <input type="hidden" name="Direccion" value="@item.Direccion" />
                                                 <input type="hidden" name="Telefono" value="@item.Telefono" />
                                                 <input type="hidden" name="Email" value="@item.Email" />

@@ -33,6 +33,7 @@ namespace HotelesBeachProyecto.Controllers
         public async Task<IActionResult> Login(string email, string password)
         {
             AutorizacionResponse autorizacion = null;
+         
 
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
@@ -45,15 +46,21 @@ namespace HotelesBeachProyecto.Controllers
             {
                 var resultado = response.Content.ReadAsStringAsync().Result;
                 autorizacion = JsonConvert.DeserializeObject<AutorizacionResponse>(resultado);
-
+             
             }
             if (autorizacion != null && autorizacion.Resultado == true)
             {
                 var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
                 identity.AddClaim(new Claim(ClaimTypes.Name, email));
+                identity.AddClaim(new Claim("IsAdmin", autorizacion.Usuario.IsAdmin.ToString()));
                 var principal = new ClaimsPrincipal(identity);
                 await HttpContext.SignInAsync("CookieAuthentication", principal);
                 HttpContext.Session.SetString("token", autorizacion.Token);
+                var usuarioJson = JsonConvert.SerializeObject(autorizacion.Usuario);
+                HttpContext.Session.SetString("usuario", usuarioJson);
+
+
+
                 return RedirectToAction("Index", "Home");
             }
             else

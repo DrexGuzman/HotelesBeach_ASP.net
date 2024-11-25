@@ -44,40 +44,39 @@
 
                             <ul class="navbar-nav">
                                 @if (User.Identity.IsAuthenticated)
-
                                 {
+                                    @if (User.HasClaim(c => c.Type == "IsAdmin" && c.Value == "True"))
+                                    {
+                                        <div class="dropdown justify-content-center align-content-center">
+                                            <button class="shadow-none btn dropdown-toggle fw-bold text-white border-0" type="button" id="dropdownMenuButton" aria-expanded="false">
+                                                Panel administrador
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                <li>
+                                                    <a class="dropdown-item text-black" asp-controller="GestionarPaquetes" asp-action="Index">Gestionar paquetes</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item text-black" asp-controller="GestionarUsuarios" asp-action="Index">Gestionar usuarios</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item text-black" asp-controller="GestionarReservas" asp-action="Index">Gestionar reservas</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                        <style>
+                                            .dropdown:hover .dropdown-menu {
+                                                display: block;
+                                            }
+
+                                            .dropdown-menu {
+                                                display: none;
+                                            }
+                                        </style>
+                                    }
+
                                     <div class="dropdown justify-content-center align-content-center">
-                                        <button class="shadow-none btn dropdown-toggle fw-bold text-white border-0" type="button" id="dropdownMenuButton" aria-expanded="false">
-                                            Panel administrador
-                                        </button>
-                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                            <li>
-                                                <a class="dropdown-item text-black" asp-controller="GestionarPaquetes" asp-action="Index">Gestionar paquetes</a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item text-black" asp-controller="GestionarUsuarios" asp-action="Index">Gestionar usuarios</a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item text-black" asp-controller="GestionarReservas" asp-action="Index">Gestionar reservas</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-
-                                    <style>
-                                     
-                                        .dropdown:hover .dropdown-menu {
-                                            display: block;
-                                        }
-
-                                      
-                                        .dropdown-menu {
-                                            display: none;
-                                        }
-                                    </style>
-
-
-                                    <div class="dropdown  justify-content-center align-content-center">
-                                        <button class="btn shadow-none   dropdown-toggle fw-bold text-white" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <button class="btn shadow-none dropdown-toggle fw-bold text-white" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                             Hola @User.Identity.Name
                                         </button>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -86,8 +85,6 @@
                                             </li>
                                         </ul>
                                     </div>
-
-                           
                                 }
                                 else
                                 {
@@ -95,6 +92,7 @@
                                         <a class="nav-link fw-bold text-white" asp-area="" asp-controller="Usuarios" asp-action="Login">Iniciar Sesion</a>
                                     </li>
                                 }
+
                             </ul>
 
                         </ul>
