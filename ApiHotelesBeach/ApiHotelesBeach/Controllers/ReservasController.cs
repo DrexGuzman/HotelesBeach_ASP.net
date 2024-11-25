@@ -55,7 +55,7 @@ namespace ApiHotelesBeach.Controllers
             }
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpPost("Agregar")]
         public async Task<IActionResult> Agregar([FromBody] ReservaCreateDto reservaDto)
         {
@@ -76,7 +76,6 @@ namespace ApiHotelesBeach.Controllers
                 return NotFound("El paquete elegido no existe.");
             }
 
-            var descuento = CalcularDescuento(reservaDto.CantidadNoches);
             var formaPago = CrearFormaPago(reservaDto);
 
             if (formaPago != null)
@@ -90,6 +89,11 @@ namespace ApiHotelesBeach.Controllers
                 {
                     return StatusCode(500, $"Error al guardar la forma de pago: {ex.Message}");
                 }
+            }
+            var descuento = 0.0m;
+            if (reservaDto.NombreFormaPago.ToLower() == "efectivo")
+            {
+                descuento = CalcularDescuento(reservaDto.CantidadNoches);
             }
 
             var montoTotal = (paqueteExiste.Costo * reservaDto.CantidadPersonas) * reservaDto.CantidadNoches;
