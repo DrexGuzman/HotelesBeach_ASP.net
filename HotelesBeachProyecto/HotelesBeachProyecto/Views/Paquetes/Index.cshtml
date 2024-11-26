@@ -22,7 +22,7 @@
                             <li>💵 @(Math.Round(paquete.Prima * 100).ToString("0"))% de prima</li>
                             <li>📆 Saldo en @paquete.Mensualidades cuotas</li>
                         </ul>
-                        <a href="@Url.Action("Reservar", "Paquetes", new { id = paquete.Id })" class="btn btn-warning">Reservar</a>
+                        <a href="@Url.Action("Create", "Reservas", new { id = paquete.Id })" class="btn btn-warning">Reservar</a>
                     </div>
                 </div>
             </div>
