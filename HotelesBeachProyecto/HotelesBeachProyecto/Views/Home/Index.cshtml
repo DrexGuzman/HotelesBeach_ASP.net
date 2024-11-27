@@ -1,7 +1,13 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>@TempData["Mensaje"]</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 <div class="">
     <h1 class="display-4 text-white fw-bold fs-[80px] mt-5 text-wrap w-50 ms-5 ps-5">El Mejor lugar para tus vacaciones</h1>
     <p class="text-white fs-2 fw-light w-50 ms-5 ps-5 mb-5">

@@ -115,11 +115,13 @@ namespace HotelesBeachProyecto.Controllers
 
             if (resultado.IsSuccessStatusCode)
             {
+                TempData["Mensaje"] = "Se realizo la reserva con éxito";
                 return RedirectToAction("Index","Home");
             }
             else
             {
-                return View(viewModel.reserva);
+                TempData["Mensaje"] = "No se encontro la cedula";
+                 return RedirectToAction("Create");
             }
         }
 
