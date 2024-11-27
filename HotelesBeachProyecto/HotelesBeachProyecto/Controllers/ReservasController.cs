@@ -50,6 +50,12 @@ namespace HotelesBeachProyecto.Controllers
             // Llamar al método de la API
             HttpResponseMessage response = await client.GetAsync("/Paquetes/Listado");
 
+            if (response.StatusCode.ToString().Equals("Unauthorized"))
+            {
+
+                return RedirectToAction("Login", "Usuarios");
+            }
+
             if (response.IsSuccessStatusCode)
             {
                 var resultado = await response.Content.ReadAsStringAsync();
